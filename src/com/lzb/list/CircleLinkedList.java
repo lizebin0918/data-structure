@@ -7,7 +7,7 @@ import java.util.*;
  * Created on : 2020-12-23 22:45
  * @author lizebin
  */
-public class MyCircleLinkedList<E> {
+public class CircleLinkedList<E> {
 
     /**
      * 头指针（实际指向第一个元素）
@@ -20,9 +20,9 @@ public class MyCircleLinkedList<E> {
 
     private static class Node<E> {
         E data;
-        MyCircleLinkedList.Node<E> next;
+        CircleLinkedList.Node<E> next;
 
-        public Node(MyCircleLinkedList.Node<E> next, E data) {
+        public Node(CircleLinkedList.Node<E> next, E data) {
             this.next = next;
             this.data = data;
         }
@@ -69,7 +69,7 @@ public class MyCircleLinkedList<E> {
      */
     public static void josephusSolution(int start, int count, int total) {
         //构造环形链表
-        MyCircleLinkedList<String> list = new MyCircleLinkedList<>();
+        CircleLinkedList<String> list = new CircleLinkedList<>();
         for (int i = 0; i<total; i++) {
             list.add(Objects.toString(i + 1));
         }
@@ -113,7 +113,7 @@ public class MyCircleLinkedList<E> {
     }
 
     public static void main(String[] args) {
-        MyCircleLinkedList<String> list = new MyCircleLinkedList<>();
+        CircleLinkedList<String> list = new CircleLinkedList<>();
         list.add("a");
         list.add("b");
         list.add("c");
@@ -123,6 +123,6 @@ public class MyCircleLinkedList<E> {
         list.add("e");
         list.show();
 
-        MyCircleLinkedList.josephusSolution(0, 2, 1);
+        CircleLinkedList.josephusSolution(0, 2, 1);
     }
 }

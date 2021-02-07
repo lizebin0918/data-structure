@@ -8,7 +8,7 @@ import com.lzb.tree.printer.BinaryTrees;
  * Created on : 2021-01-21 22:43
  * @author lizebin
  */
-public class MyAvlTree<E extends Comparable<? super E>> extends MyBalanceBinarySearchTree<E> {
+public class AvlTree<E extends Comparable<? super E>> extends BalanceBinarySearchTree<E> {
 
     public static class AvlNode<E> extends Node<E> {
 
@@ -134,7 +134,7 @@ public class MyAvlTree<E extends Comparable<? super E>> extends MyBalanceBinaryS
     }
 
     public static void main(String[] args) {
-        MyAvlTree<Integer> tree = new MyAvlTree<>();
+        AvlTree<Integer> tree = new AvlTree<>();
 
         tree.add(8);
         tree.add(5);

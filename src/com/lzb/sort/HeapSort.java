@@ -12,7 +12,7 @@ import java.util.Random;
  * Created on : 2021-01-04 21:28
  * @author lizebin
  */
-public class MyHeapSort {
+public class HeapSort {
 
     public static void main(String[] args) {
         int size = 100;

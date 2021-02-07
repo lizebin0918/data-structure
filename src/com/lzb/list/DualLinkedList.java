@@ -7,7 +7,7 @@ import java.util.Objects;
  * Created on : 2020-12-23 21:40
  * @author lizebin
  */
-public class MyDualLinkedList<E> {
+public class DualLinkedList<E> {
 
     private Node<E> head;
 
@@ -23,7 +23,7 @@ public class MyDualLinkedList<E> {
         }
     }
 
-    public MyDualLinkedList() {
+    public DualLinkedList() {
         head = new Node<>(null, null, null);
     }
 
@@ -91,7 +91,7 @@ public class MyDualLinkedList<E> {
     }
 
     public static void main(String[] args) {
-        MyDualLinkedList<String> list = new MyDualLinkedList<>();
+        DualLinkedList<String> list = new DualLinkedList<>();
         list.add("1");
         list.add("2");
         list.add("3");

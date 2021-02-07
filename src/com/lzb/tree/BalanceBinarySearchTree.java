@@ -20,7 +20,7 @@ import com.lzb.tree.printer.BinaryTreeInfo;
  * Created on : 2021-01-05 23:15
  * @author lizebin
  */
-public class MyBalanceBinarySearchTree<E extends Comparable<? super E>> extends MyBinarySearchTree<E> implements BinaryTreeInfo {
+public class BalanceBinarySearchTree<E extends Comparable<? super E>> extends BinarySearchTree<E> implements BinaryTreeInfo {
 
     /**
      * 右旋

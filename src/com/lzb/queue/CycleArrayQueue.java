@@ -13,7 +13,7 @@ import java.util.Scanner;
  * Created on : 2020-12-16 22:26
  * @author lizebin
  */
-public class CycleArrayQueue<E> implements MyQueue<E> {
+public class CycleArrayQueue<E> implements Queue<E> {
 
     private Object[] array;
 

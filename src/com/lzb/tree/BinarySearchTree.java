@@ -24,7 +24,7 @@ import java.util.Objects;
  * Created on : 2021-01-05 23:15
  * @author lizebin
  */
-public class MyBinarySearchTree<E extends Comparable<? super E>> implements BinaryTreeInfo {
+public class BinarySearchTree<E extends Comparable<? super E>> implements BinaryTreeInfo {
 
     /**
      * 查找节点
@@ -120,7 +120,7 @@ public class MyBinarySearchTree<E extends Comparable<? super E>> implements Bina
     }
 
     public static void main(String[] args) {
-        MyBinarySearchTree<Integer> tree = new MyBinarySearchTree<>();
+        BinarySearchTree<Integer> tree = new BinarySearchTree<>();
         tree.add(4);
         tree.add(2);
         tree.add(6);

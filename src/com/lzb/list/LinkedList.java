@@ -8,7 +8,7 @@ import java.util.Objects;
  * Created on : 2020-12-20 10:32
  * @author lizebin
  */
-public class MyLinkedList<E> {
+public class LinkedList<E> {
 
     private Node<E> head = new Node<>(null, null);
 
@@ -23,7 +23,7 @@ public class MyLinkedList<E> {
     }
 
     public static void main(String[] args) {
-        MyLinkedList<String> list = new MyLinkedList<>();
+        LinkedList<String> list = new LinkedList<>();
         //list.addLast("a");
         Comparator<String> comparator = Comparator.naturalOrder();
         /*list.addByOrder("a", comparator);
@@ -48,13 +48,13 @@ public class MyLinkedList<E> {
 
 
         Comparator<Integer> comparator1 = Comparator.naturalOrder();
-        MyLinkedList<Integer> list1 = new MyLinkedList<>();
+        LinkedList<Integer> list1 = new LinkedList<>();
         list1.addLast(1);
         list1.addLast(2);
         list1.addLast(5);
         list1.addLast(6);
         list1.addLast(20);
-        MyLinkedList<Integer> list2 = new MyLinkedList<>();
+        LinkedList<Integer> list2 = new LinkedList<>();
         list2.addLast(3);
         list2.addLast(4);
         list2.addLast(6);
@@ -63,7 +63,7 @@ public class MyLinkedList<E> {
         list2.addLast(9);
         list2.addLast(21);
 
-        MyLinkedList<Integer> list3 = new MyLinkedList<>();
+        LinkedList<Integer> list3 = new LinkedList<>();
         list3.merge(list1, list2, comparator1);
         list3.show();
     }
@@ -219,7 +219,7 @@ public class MyLinkedList<E> {
      * @param comparator
      * @return
      */
-    public void merge(MyLinkedList<E> list1, MyLinkedList<E> list2, Comparator<E> comparator) {
+    public void merge(LinkedList<E> list1, LinkedList<E> list2, Comparator<E> comparator) {
         Node<E> head1 = list1.head, head2 = list2.head, next1 = head1.next, next2 = head2.next;
         while (Objects.nonNull(next1) || Objects.nonNull(next2)) {
             if (Objects.isNull(next1)) {

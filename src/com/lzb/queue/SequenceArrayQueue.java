@@ -7,7 +7,7 @@ import java.util.Arrays;
  * Created on : 2020-12-14 22:21
  * @author lizebin
  */
-public class SequenceArrayQueue<E> implements MyQueue<E> {
+public class SequenceArrayQueue<E> implements Queue<E> {
 
     private Object[] array;
 

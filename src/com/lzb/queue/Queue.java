@@ -6,7 +6,7 @@ package com.lzb.queue;
  * Created on : 2020-12-08 22:58
  * @author lizebin
  */
-public interface MyQueue<E> {
+public interface Queue<E> {
 
     /**
      * 队列有效个数

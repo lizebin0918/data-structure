@@ -9,12 +9,12 @@ import com.lzb.tree.printer.BinaryTrees;
  * Created on : 2021-01-31 23:10
  * @author lizebin
  */
-public class MyRbTree<E extends Comparable<? super E>> extends MyBalanceBinarySearchTree<E> implements BinaryTreeInfo {
+public class RbTree<E extends Comparable<? super E>> extends BalanceBinarySearchTree<E> implements BinaryTreeInfo {
 
     private static final boolean BLACK = true;
     private static final boolean RED = false;
 
-    private static class RbNode<E> extends MyBinarySearchTree.Node<E> {
+    private static class RbNode<E> extends BinarySearchTree.Node<E> {
 
         private boolean color = RED;
 
@@ -273,7 +273,7 @@ public class MyRbTree<E extends Comparable<? super E>> extends MyBalanceBinarySe
 
         int[] array = {8, 1, 15, 2, 3, 4, 7, 9, 6, 20, 11, 5};
 
-        MyRbTree<Integer> tree = new MyRbTree<>();
+        RbTree<Integer> tree = new RbTree<>();
         for (int i : array) {
             System.out.println("-------------" + i + "---------------");
             tree.add(i);
