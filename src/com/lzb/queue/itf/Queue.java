@@ -1,4 +1,4 @@
-package com.lzb.queue;
+package com.lzb.queue.itf;
 
 /**
  * 队列实现:先进先出，它只允许在表的前端进行删除操作，而在表的后端进行插入操作。

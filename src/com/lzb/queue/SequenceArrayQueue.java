@@ -1,5 +1,7 @@
 package com.lzb.queue;
 
+import com.lzb.queue.itf.Queue;
+
 import java.util.Arrays;
 
 /**
