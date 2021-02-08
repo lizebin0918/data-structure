@@ -6,7 +6,7 @@ import java.util.Map;
  * 修改HashMap： LinkedList[] entrys --》Entry[] entrys
  * 还没有实现：Iterator接口
  * */
-public class LizebinHashMap20140108<K, V> implements DefinitionMap<K, V> {
+public class LizebinHashMap<K, V> implements DefinitionMap<K, V> {
 
 	@SuppressWarnings("rawtypes")
 	private transient Entry[] entrys;
@@ -17,11 +17,11 @@ public class LizebinHashMap20140108<K, V> implements DefinitionMap<K, V> {
 	
 	private int size;
 	
-	public LizebinHashMap20140108(int capacity) {
+	public LizebinHashMap(int capacity) {
 		entrys = new Entry[capacity];
 	}
 	
-	public LizebinHashMap20140108() {
+	public LizebinHashMap() {
 		entrys = new Entry[INITIAL_CAPACITY];
 	}
 	
