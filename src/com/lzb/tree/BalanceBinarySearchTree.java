@@ -3,6 +3,8 @@ package com.lzb.tree;
 
 import com.lzb.tree.printer.BinaryTreeInfo;
 
+import java.util.Objects;
+
 /**
  * 二叉排序树:左子树 < 根 < 右子树，子树符合二叉搜索树
  * 此处泛型的意思：类型 E 必须实现 Comparable 接口，并且这个接口的类型是 E 或 E 的任一父类。
@@ -27,6 +29,10 @@ public class BalanceBinarySearchTree<E extends Comparable<? super E>> extends Bi
      * @param node
      */
     protected void rotateRight(Node<E> node) {
+        if (Objects.isNull(node)) {
+            return;
+        }
+
         Node<E> newParent = node.left;
         Node<E> parent = node.parent;
 
@@ -63,6 +69,11 @@ public class BalanceBinarySearchTree<E extends Comparable<? super E>> extends Bi
      * @param node
      */
     protected void rotateLeft(Node<E> node) {
+
+        if (Objects.isNull(node)) {
+            return;
+        }
+
         Node<E> newParent = node.right;
         Node<E> parent = node.parent;
 

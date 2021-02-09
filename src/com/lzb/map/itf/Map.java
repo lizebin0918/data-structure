@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public interface Map<K,V> {
+public interface Map<K extends Comparable<? super K>,V> {
     
     int size();
 
     boolean isEmpty();
 
-    boolean containsKey(Object key);
+    boolean containsKey(K key);
 
-    boolean containsValue(Object value);
+    boolean containsValue(V value);
  
     V put(K key, V value);
 
