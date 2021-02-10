@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 /**
  * 底层是红黑树的TreeMap<br/>
  * Created on : 2021-02-07 22:27
+ *
  * @author lizebin
  */
 public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
@@ -17,10 +18,10 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
 
     private Node<K, V> root;
 
-    private static class Node<K extends Comparable<? super K>, V> {
+    private static final boolean BLACK = true;
+    private static final boolean RED = false;
 
-        private static final boolean BLACK = true;
-        private static final boolean RED = false;
+    private static class Node<K extends Comparable<? super K>, V> {
 
         private boolean color = RED;
 
@@ -81,54 +82,6 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
             return null;
         }
 
-        /**
-         * 节点颜色
-         * @param node
-         * @return
-         */
-        private boolean colorOf(Node<K, V> node) {
-            return node == null ? BLACK : ((Node<K, V>)node).color;
-        }
-
-        private boolean isBlack(Node<K, V> node) {
-            return colorOf(node) == BLACK;
-        }
-
-        private boolean isRed(Node<K, V> node) {
-            return colorOf(node) == RED;
-        }
-
-        /**
-         * 染色
-         * @param node
-         * @param color
-         * @return
-         */
-        private Node<K, V> color(Node<K, V> node, boolean color) {
-            if (node != null) {
-                ((Node<K, V>) node).color = color;
-            }
-            return (Node<K, V>) node;
-        }
-
-        /**
-         * 染黑
-         * @param node
-         * @return
-         */
-        private Node<K, V> black(Node<K, V> node) {
-            return color(node, BLACK);
-        }
-
-        /**
-         * 染红
-         * @param node
-         * @return
-         */
-        private Node<K, V> red(Node<K, V> node) {
-            return color(node, RED);
-        }
-
     }
 
     @Override
@@ -155,54 +108,57 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
      * 0.找到父节点 parent
      * 1.创建新节点 node
      * 2.parent.left = node 或者 parent.right = node
-     *
+     * <p>
      * 注意：如果遇到相同的值，需要覆盖替换成新的对象
+     *
      * @param key
      * @param value
      * @return 返回被替换的值
      */
     @Override
     public V put(K key, V value) {
-            if (key == null) {
-                throw new IllegalArgumentException("data not null");
-            }
-            if (root == null) {
-                root = new Node<>(key, value, null);
-                addAfter(root);
-                size++;
-                return null;
-            }
-            Node<K, V> newNode = null;
-            Node<K, V> parent = root;
-            while (true) {
-                if (compare(parent.key, key) > 0) {
-                    Node<E> left = parent.left;
-                    if (left == null) {
-                        newNode = createNode(data, parent);
-                        parent.left = newNode;
-                        break;
-                    }
-                    parent = left;
-                    continue;
-                } else if (compare(parent.data, data) < 0) {
-                    Node<E> right = parent.right;
-                    if (right == null) {
-                        newNode = createNode(data, parent);
-                        parent.right = newNode;
-                        break;
-                    }
-                    parent = right;
-                    continue;
-                } else {
-                    parent.data = data;
-                    return;
-                }
-            }
+        if (key == null) {
+            throw new IllegalArgumentException("data not null");
+        }
+        if (root == null) {
+            root = new Node<>(key, value, null);
+            addAfter(root);
             size++;
-
-            if (newNode != null) {
-                addAfter(newNode);
+            return null;
+        }
+        Node<K, V> newNode = null;
+        Node<K, V> parent = root;
+        while (true) {
+            if (compare(parent.key, key) > 0) {
+                Node<K, V> left = parent.left;
+                if (left == null) {
+                    newNode = new Node<>(key, value, parent);
+                    parent.left = newNode;
+                    break;
+                }
+                parent = left;
+                continue;
+            } else if (compare(parent.key, key) < 0) {
+                Node<K, V> right = parent.right;
+                if (right == null) {
+                    newNode = new Node<>(key, value, parent);
+                    parent.right = newNode;
+                    break;
+                }
+                parent = right;
+                continue;
+            } else {
+                parent.key = key;
+                return parent.value;
             }
+        }
+        size++;
+
+        if (newNode != null) {
+            addAfter(newNode);
+        }
+
+        return null;
     }
 
     @Override
@@ -242,6 +198,7 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
 
     /**
      * 新增完成，维持平衡
+     *
      * @param node
      */
     private void addAfter(Node<K, V> node) {
@@ -258,10 +215,10 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
             return;
         }
 
-        BinarySearchTree.Node<E> grand = parent.parent;
+        Node<K, V> grand = parent.parent;
 
         //-红黑红，添加在红的两边，上溢（裂变），向上递归 --> 4种情况
-        BinarySearchTree.Node<E> uncle = node.uncle();
+        Node<K, V> uncle = node.uncle();
         if (uncle != null && isRed(uncle)) {
             black(parent);
             black(uncle);
@@ -301,10 +258,146 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
         return k1.compareTo(k2);
     }
 
+    /**
+     * 节点颜色
+     *
+     * @param node
+     * @return
+     */
+    private boolean colorOf(Node<K, V> node) {
+        return node == null ? BLACK : ((Node<K, V>) node).color;
+    }
+
+    private boolean isBlack(Node<K, V> node) {
+        return colorOf(node) == BLACK;
+    }
+
+    private boolean isRed(Node<K, V> node) {
+        return colorOf(node) == RED;
+    }
+
+    /**
+     * 染色
+     *
+     * @param node
+     * @param color
+     * @return
+     */
+    private Node<K, V> color(Node<K, V> node, boolean color) {
+        if (node != null) {
+            ((Node<K, V>) node).color = color;
+        }
+        return (Node<K, V>) node;
+    }
+
+    /**
+     * 染黑
+     *
+     * @param node
+     * @return
+     */
+    private Node<K, V> black(Node<K, V> node) {
+        return color(node, BLACK);
+    }
+
+    /**
+     * 染红
+     *
+     * @param node
+     * @return
+     */
+    private Node<K, V> red(Node<K, V> node) {
+        return color(node, RED);
+    }
+
+    /**
+     * 右旋
+     *
+     * @param node
+     */
+    protected void rotateRight(Node<K, V> node) {
+        if (Objects.isNull(node)) {
+            return;
+        }
+
+        Node<K, V> newParent = node.left;
+        Node<K, V> parent = node.parent;
+
+        //先旋转
+        node.left = newParent.right;
+        newParent.right = node;
+
+        //修改 parent
+        {
+            newParent.parent = parent;
+            if (node.isLeft()) {
+                node.parent.left = newParent;
+            } else if (node.isRight()) {
+                node.parent.right = newParent;
+            } else {
+                root = newParent;
+            }
+        }
+
+        {
+            node.parent = newParent;
+        }
+
+        {
+            if (node.left != null) {
+                node.left.parent = node;
+            }
+        }
+
+    }
+
+    /**
+     * 左旋
+     *
+     * @param node
+     */
+    private void rotateLeft(Node<K, V> node) {
+
+        if (Objects.isNull(node)) {
+            return;
+        }
+
+        Node<K, V> newParent = node.right;
+        Node<K, V> parent = node.parent;
+
+        //旋转
+        node.right = newParent.left;
+        newParent.left = node;
+
+        //修改 parent : node, node.right, node.parent
+        {
+            newParent.parent = parent;
+            if (node.isLeft()) {
+                node.parent.left = newParent;
+            } else if (node.isRight()) {
+                node.parent.right = newParent;
+            } else {
+                root = newParent;
+            }
+        }
+
+        {
+            node.parent = newParent;
+        }
+
+        {
+            if (node.right != null) {
+                node.right.parent = node;
+            }
+        }
+
+
+    }
+
     public static void main(String[] args) {
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("a", "b");
 
-
+        System.out.println(tm.getOrDefault("a", null));
     }
 }
