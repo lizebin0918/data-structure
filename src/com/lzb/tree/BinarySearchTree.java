@@ -486,7 +486,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements Binary
     }
 
     /**
-     * 前驱节点
+     * 后继节点
      * @return
      */
     public Node<E> successor(E data) {

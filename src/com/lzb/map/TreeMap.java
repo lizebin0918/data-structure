@@ -1,10 +1,9 @@
 package com.lzb.map;
 
 import com.lzb.map.itf.Map;
-import com.lzb.tree.BinarySearchTree;
 
 import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.function.*;
 
 /**
  * 底层是红黑树的TreeMap<br/>
@@ -96,11 +95,29 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        return false;
+        return get(key) != null;
     }
 
+    /**
+     * 层遍历
+     * @param value
+     * @return
+     */
     @Override
     public boolean containsValue(V value) {
+        if (Objects.isNull(root)) {
+            return false;
+        }
+        LinkedList<Node<K, V>> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            Node<K, V> node = queue.poll();
+            if (Objects.equals(node.value, value)) {
+                return true;
+            }
+            Optional.ofNullable(node.left).ifPresent(queue::add);
+            Optional.ofNullable(node.right).ifPresent(queue::add);
+        }
         return false;
     }
 
@@ -149,6 +166,7 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
                 continue;
             } else {
                 parent.key = key;
+                parent.value = value;
                 return parent.value;
             }
         }
@@ -162,38 +180,220 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
     }
 
     @Override
-    public V remove(Object key) {
-        return null;
+    public V remove(K key) {
+        Node<K, V> node = getNode(key);
+        if (Objects.isNull(node)) {
+            return null;
+        }
+        V value = node.value;
+
+        //度为2的节点
+        if (Objects.nonNull(node.left) && Objects.nonNull(node.right)) {
+            Node<K, V> removeNode = predecessor(key);
+            removeNode = Objects.isNull(removeNode) ? successor(key) : removeNode;
+            node.key = removeNode.key;
+            node.value = removeNode.value;
+            node = removeNode;
+        }
+
+        //叶子（度为零）节点
+        if (node.left == null && node.right == null) {
+            Node<K, V> parent = node.parent;
+            if (parent == null) {
+                root = null;
+                return value;
+            }
+            if (parent.left == node) {
+                parent.left = null;
+            } else {
+                parent.right = null;
+            }
+            node.key = null;
+            node.value = null;
+            --size;
+            removeAfter(node);
+            return value;
+        }
+
+        //度为1的节点
+        Node<K, V> parent = node.parent;
+        Node<K, V> nextNode = Objects.nonNull(node.left) ? node.left : node.right;
+        if (parent == null) {
+            root = nextNode;
+            nextNode.parent = null;
+            removeAfter(node);
+            return value;
+        }
+        nextNode.parent = parent;
+        if (parent.left == node) {
+            parent.left = nextNode;
+        } else {
+            parent.right = nextNode;
+        }
+        node.key = null;
+        node.value = null;
+        --size;
+        removeAfter(nextNode);
+        return value;
     }
 
-    @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
+    private void removeAfter(Node<K, V> node) {
+        if (node == root) {
+            return;
+        }
 
+        //如果删除节点为黑，传进来的node是替换节点（非删除节点），由红变黑
+        //如果删除节点为红，传进来的node是删除节点，这个节点回被断开回收，多做一步染黑操作而已
+        if (isRed(node)) {
+            black(node);
+            return;
+        }
+
+        //"兄弟是否能借，长兄为父，父亲下来顶儿子"
+        //--兄弟为红，通过旋转变成找到黑兄弟
+        boolean isLeft = node.parent.left == null || node.isLeft();
+        Node<K, V> sibling = isLeft ? node.parent.right : node.parent.left;
+        if (isRed(sibling)) {
+            //染黑，升级。sibling.parent 下降需要染红减少一个黑，维持两边平衡
+            black(sibling);
+            red(sibling.parent);
+            if (sibling.isLeft()) {
+                rotateRight(sibling.parent);
+            } else {
+                rotateLeft(sibling.parent);
+            }
+            sibling = isLeft ? node.parent.right : node.parent.left;
+        }
+
+        //--黑兄弟的度 >= 1
+        if (isRed(sibling.right) || isRed(sibling.left)) {
+            Node<K, V> grand = sibling.parent;
+            //删除节点的路径上补充一个黑色节点
+            color(grand, BLACK);
+            Node<K, V> siblingChild = isRed(sibling.right) ? sibling.right : sibling.left;
+
+            if (sibling.isLeft()) {
+                if (siblingChild.isRight()) {
+                    color(siblingChild, colorOf(sibling.parent));
+                    rotateLeft(sibling);
+                } else {
+                    //继承父节点的颜色
+                    color(siblingChild, colorOf(sibling));
+                    color(sibling, colorOf(sibling.parent));
+                }
+                rotateRight(grand);
+            } else {
+                if (siblingChild.isLeft()) {
+                    color(siblingChild, colorOf(sibling.parent));
+                    rotateRight(sibling);
+                } else {
+                    //继承父节点的颜色
+                    color(siblingChild, colorOf(sibling));
+                    color(sibling, colorOf(sibling.parent));
+                }
+                rotateLeft(grand);
+            }
+            return;
+        }
+
+        //"兄弟借不了，只能有难同当，兄弟自损，父亲下来顶孩子"
+        //--黑兄弟的度 = 0
+        color(sibling, RED);
+        if (isRed(sibling.parent)) {
+            color(sibling.parent, BLACK);
+            return;
+        }
+
+        removeAfter(sibling.parent);
     }
 
     @Override
     public void clear() {
-
+        root = null;
+        size = 0;
     }
 
+    /**
+     * 中序遍历
+     * @return
+     */
     @Override
     public Set<K> keySet() {
-        return null;
+        Set<K> set = new HashSet<>();
+        inorderTraversal(root, (n) -> {
+            set.add(n.key);
+        });
+        return set;
+    }
+
+    private void inorderTraversal(Node<K, V> node, Consumer<Node<K, V>> consumer) {
+        if (Objects.isNull(node)) {
+            return;
+        }
+        inorderTraversal(node.left, consumer);
+        consumer.accept(node);
+        inorderTraversal(node.right, consumer);
     }
 
     @Override
     public Collection<V> values() {
-        return null;
+        Set<V> set = new HashSet<>();
+        inorderTraversal(root, (n) -> {
+            set.add(n.value);
+        });
+        return set;
     }
 
     @Override
-    public V getOrDefault(Object key, V defaultValue) {
+    public V get(K key) {
+        Node<K, V> node = getNode(key);
+        if (Objects.nonNull(node)) {
+            return node.value;
+        }
+        return null;
+    }
+
+    /**
+     * 查询节点
+     * @param key
+     * @return
+     */
+    private Node<K, V> getNode(K key) {
+        if (Objects.isNull(root)) {
+            return null;
+        }
+        Node<K, V> node = root;
+        while (node != null) {
+            K k = node.key;
+            int comp = compare(key, k);
+            if (comp > 0) {
+                node = node.right;
+            } else if (comp < 0) {
+                node = node.left;
+            } else {
+                return node;
+            }
+        }
         return null;
     }
 
     @Override
     public void forEach(BiConsumer<? super K, ? super V> action) {
-
+        LinkedList<Node<K, V>> queue = new LinkedList<>();
+        queue.add(root);
+        Node<K, V> node = null;
+        while (!queue.isEmpty()) {
+            node = queue.poll();
+            action.accept(node.key, node.value);
+            Node<K, V> left = node.left;
+            if (left != null) {
+                queue.add(left);
+            }
+            Node<K, V> right = node.right;
+            if (right != null) {
+                queue.add(right);
+            }
+        }
     }
 
     /**
@@ -252,7 +452,7 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
     }
 
     private int compare(K k1, K k2) {
-        if (k1 == null) {
+        if (k1 == null || k2 == null) {
             throw new IllegalArgumentException("key is null");
         }
         return k1.compareTo(k2);
@@ -315,7 +515,7 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
      *
      * @param node
      */
-    protected void rotateRight(Node<K, V> node) {
+    private void rotateRight(Node<K, V> node) {
         if (Objects.isNull(node)) {
             return;
         }
@@ -390,14 +590,131 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
                 node.right.parent = node;
             }
         }
-
-
     }
 
-    public static void main(String[] args) {
-        TreeMap<String, String> tm = new TreeMap<>();
-        tm.put("a", "b");
+    /**
+     * 前驱节点
+     * @return
+     */
+    private Node<K, V> predecessor(K data) {
+        Node<K, V> node = getNode(data);
+        if (node == null) {
+            return null;
+        }
+        Node<K, V> left = node.left;
+        //左子树最大的节点（一直往右找）
+        if (Objects.nonNull(left)) {
+            Node<K, V> preNode = left.right;
+            if (Objects.isNull(preNode)) {
+                return left;
+            }
+            while (true) {
+                if (Objects.isNull(preNode.right)) {
+                    return preNode;
+                }
+                preNode = preNode.right;
+            }
+        }
+        //往上node.parent.... = parent.right
+        Node<K, V> parent = node.parent;
+        while (Objects.nonNull(parent)) {
+            if (parent.right == node) {
+                return parent;
+            }
+            node = parent;
+            parent = node.parent;
+        }
+        return null;
+    }
 
-        System.out.println(tm.getOrDefault("a", null));
+    /**
+     * 后继节点
+     * @return
+     */
+    private Node<K, V> successor(K data) {
+        Node<K, V> node = getNode(data);
+        if (node == null) {
+            return null;
+        }
+        Node<K, V> right = node.right;
+        //右子树最大的节点（一直往左找）
+        if (Objects.nonNull(right)) {
+            Node<K, V> preNode = right.left;
+            if (Objects.isNull(preNode)) {
+                return right;
+            }
+            while (true) {
+                if (Objects.isNull(preNode.left)) {
+                    return preNode;
+                }
+                preNode = preNode.left;
+            }
+        }
+        //往上node.parent.... = parent.left
+        Node<K, V> parent = node.parent;
+        while (Objects.nonNull(parent)) {
+            if (parent.left == node) {
+                return parent;
+            }
+            node = parent;
+            parent = node.parent;
+        }
+        return null;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        TreeMap<String, String> tm = new TreeMap<>();
+        tm.put("a", "a" + "1");
+        tm.put("a", "a" + "2");
+        tm.put("a", "a" + "3");
+        tm.put("a", "a" + "4");
+        tm.put("b", "b" + "1");
+        tm.put("c", "c" + "1");
+        tm.put("d", "d" + "1");
+
+        System.out.println(tm.get("a"));
+        System.out.println(tm.get("b"));
+        System.out.println(tm.get("c"));
+        System.out.println(tm.keySet());
+        System.out.println(tm.values());
+
+        tm.forEach((k, v) -> {
+            System.out.println("k=" + k + ";v=" + v);
+        });
+
+        /*ExecutorService threadPool = Executors.newFixedThreadPool(2);
+
+        new Thread(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                //ignore
+            }
+            System.out.println("shutdown threadPool");
+            threadPool.shutdown();
+        }).start();
+
+        int tasks = 10;
+        CountDownLatch latch = new CountDownLatch(tasks);
+        for (int i=0; i<tasks; i++) {
+            int taskId = i;
+            Random r = new Random();
+            System.out.println(" add task:" + taskId);
+            threadPool.execute(() -> {
+                System.out.println("----------------" + " start " + taskId + "-------------------");
+                try {
+                    TimeUnit.SECONDS.sleep(6 + r.nextInt(5));
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+                System.out.println("----------------" + " end " + taskId + "-------------------");
+                latch.countDown();
+            });
+        }
+
+        latch.await();
+
+        System.out.println("finish");*/
+
     }
 }

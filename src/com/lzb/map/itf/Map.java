@@ -16,9 +16,7 @@ public interface Map<K extends Comparable<? super K>,V> {
  
     V put(K key, V value);
 
-    V remove(Object key);
-
-    void putAll(Map<? extends K, ? extends V> m);
+    V remove(K key);
 
     void clear();
 
@@ -26,9 +24,8 @@ public interface Map<K extends Comparable<? super K>,V> {
 
     Collection<V> values();
 
-    public V getOrDefault(Object key, V defaultValue);
+    public V get(K key);
 
-   
     void forEach(BiConsumer<? super K, ? super V> action);
     
 }
