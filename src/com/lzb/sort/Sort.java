@@ -10,28 +10,36 @@ import java.util.Random;
  *
  * @author lizebin
  */
-public class Sort {
+public abstract class Sort {
 
-    private static final int[] ARRAY;
+    private final int[] testArray;
 
-    static {
-        int length = 10;
-        ARRAY = new int[length];
+    private final int length = 100;
+
+    {
+        testArray = new int[length];
         Random random = new Random();
         for (int i = 0; i < length; i++) {
             //随机生成小于100的正整数
-            ARRAY[i] = random.nextInt(100);
+            testArray[i] = random.nextInt(100);
         }
     }
 
+    public abstract int[] sort(int[] array);
+
+    public void test() {
+        System.out.println("input array : " + Arrays.toString(this.testArray));
+        Arrays.sort(testArray);
+        int[] newArray = Arrays.copyOf(testArray, length);
+        System.out.println("result " + Arrays.equals(testArray, sort(newArray)));
+    }
+
     public static void main(String[] args) throws UnsupportedEncodingException {
-        System.out.println("source array:" + Arrays.toString(ARRAY));
-        bucketSort(Arrays.copyOf(ARRAY, ARRAY.length));
-        bubbleSort(Arrays.copyOf(ARRAY, ARRAY.length));
-        selectionSort(Arrays.copyOf(ARRAY, ARRAY.length));
-        quickSortRecursion(Arrays.copyOf(ARRAY, ARRAY.length));
-        insertionSort(Arrays.copyOf(ARRAY, ARRAY.length));
-        heapSort(Arrays.copyOf(ARRAY, ARRAY.length));
+        /*System.out.println("source array:" + Arrays.toString(testArray));
+        bucketSort(Arrays.copyOf(testArray, testArray.length));
+        quickSortRecursion(Arrays.copyOf(testArray, testArray.length));
+        insertionSort(Arrays.copyOf(testArray, testArray.length));
+        heapSort(Arrays.copyOf(testArray, testArray.length));*/
     }
 
     /**
@@ -60,54 +68,6 @@ public class Sort {
         System.out.println("bucket sorted array:" + Arrays.toString(array));
     }
 
-    /**
-     * 冒泡排序（只是单纯的交互算法）
-     *
-     * @param array
-     */
-    public static void bubbleSort(int[] array) {
-        /*
-        //只是单纯的比较交换
-        for (int i = 0, ilength = array.length; i < ilength; i++) {
-            for (int j = i + 1; j < ilength; j++) {
-                if (array[i] > array[j]) {
-                    int temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
-            }
-        }*/
-        for (int i = 0, ilength = array.length; i < ilength; i++) {
-            for (int j = 0; j < ilength - i - 1; j++) {
-                if (array[j] > array[j + 1]) {
-                    int temp = array[j + 1];
-                    array[j + 1] = array[j];
-                    array[j] = temp;
-                }
-            }
-        }
-        System.out.println("bubble sorted array:" + Arrays.toString(array));
-    }
-
-    /**
-     * 选择排序
-     *
-     * @param array
-     */
-    public static void selectionSort(int[] array) {
-        for (int i = 0, length = array.length; i < length; i++) {
-            int minIndex = i;
-            for (int j = minIndex + 1; j < length; j++) {
-                if (array[j] < array[minIndex]) {
-                    minIndex = j;
-                }
-            }
-            int temp = array[i];
-            array[i] = array[minIndex];
-            array[minIndex] = temp;
-        }
-        System.out.println("selection sorted array:" + Arrays.toString(array));
-    }
 
     /**
      * 快速排序(递归)
