@@ -14,6 +14,10 @@ public abstract class Sort {
 
     private final int[] testArray;
 
+    public int[] getTestArray() {
+        return testArray;
+    }
+
     private final int length = 100;
 
     {
@@ -31,43 +35,17 @@ public abstract class Sort {
         System.out.println("input array : " + Arrays.toString(this.testArray));
         Arrays.sort(testArray);
         int[] newArray = Arrays.copyOf(testArray, length);
-        System.out.println("result " + Arrays.equals(testArray, sort(newArray)));
+        int[] sortArray = sort(newArray);
+        System.out.println(Arrays.toString(sortArray));
+        System.out.println("result " + Arrays.equals(testArray, sortArray));
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
         /*System.out.println("source array:" + Arrays.toString(testArray));
-        bucketSort(Arrays.copyOf(testArray, testArray.length));
         quickSortRecursion(Arrays.copyOf(testArray, testArray.length));
         insertionSort(Arrays.copyOf(testArray, testArray.length));
         heapSort(Arrays.copyOf(testArray, testArray.length));*/
     }
-
-    /**
-     * 桶排序:生成一维数组，下标表示对应的值A，元素值B表示值A出现的次数
-     * 限制:如果值未知，则很难估算"桶"的个数
-     *
-     * @param array
-     */
-    public static void bucketSort(int[] array) {
-        //由题目可知，桶最大数为100
-        int[] buckets = new int[100];
-        for (int i = 0, length = array.length; i < length; i++) {
-            buckets[array[i]] += 1;
-        }
-        //回写
-        int index = 0;
-        for (int i = 0, length = buckets.length; i < length; i++) {
-            int bucketValue = buckets[i];
-            if (bucketValue > 0) {
-                for (int j = index; j < bucketValue + index; j++) {
-                    array[j] = i;
-                }
-                index += bucketValue;
-            }
-        }
-        System.out.println("bucket sorted array:" + Arrays.toString(array));
-    }
-
 
     /**
      * 快速排序(递归)
