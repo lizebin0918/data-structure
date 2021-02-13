@@ -14,6 +14,7 @@ public class MergeSort extends Sort {
         int[] testArray = this.getTestArray();
         System.out.println(Arrays.toString(testArray));
         int[] newArray = new int[testArray.length];
+        //test
         sort(testArray, 0, testArray.length - 1, newArray);
         return newArray;
     }
