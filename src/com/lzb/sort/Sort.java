@@ -34,6 +34,7 @@ public abstract class Sort {
     public void test() {
         System.out.println("input array : " + Arrays.toString(this.testArray));
         Arrays.sort(testArray);
+        System.out.println("jdk sort:" + Arrays.toString(testArray));
         int[] newArray = Arrays.copyOf(testArray, length);
         int[] sortArray = sort(newArray);
         System.out.println(Arrays.toString(sortArray));
