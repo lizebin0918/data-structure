@@ -43,28 +43,28 @@ public class MergeSort extends Sort {
     /**
      * 合并
      * @param array 原数组
-     * @param start
-     * @param mid
-     * @param end
+     * @param leftPrt 左指针
+     * @param rightPrt 右指针
+     * @param rightBound 右指针边界
      * @param newArray 新数组
      */
-    private void merge(int[] array, int start, int mid, int end, int[] newArray) {
-        for (int i=start, j=mid; i<j; i++) {
-            if (array[i] < array[mid]) {
+    private void merge(int[] array, int leftPrt, int rightPrt, int rightBound, int[] newArray) {
+        for (int i=leftPrt, j=rightPrt; i<j; i++) {
+            if (array[i] < array[rightPrt]) {
                 newArray[i] = array[i];
-                start++;
+                leftPrt++;
             } else {
-                newArray[mid] = array[mid];
-                mid++;
+                newArray[rightPrt] = array[rightPrt];
+                rightPrt++;
             }
         }
-        while (start <= mid) {
-            newArray[start] = array[start];
-            start++;
+        while (leftPrt <= rightPrt) {
+            newArray[leftPrt] = array[leftPrt];
+            leftPrt++;
         }
-        while (mid <= end) {
-            newArray[mid] = array[mid];
-            mid++;
+        while (rightPrt <= rightBound) {
+            newArray[rightPrt] = array[rightPrt];
+            rightPrt++;
         }
     }
 }
