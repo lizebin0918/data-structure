@@ -185,6 +185,8 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
         if (Objects.isNull(node)) {
             return null;
         }
+
+        --size;
         V value = node.value;
 
         //度为2的节点
@@ -210,7 +212,6 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
             }
             node.key = null;
             node.value = null;
-            --size;
             removeAfter(node);
             return value;
         }
@@ -232,7 +233,6 @@ public class TreeMap<K extends Comparable<? super K>, V> implements Map<K, V> {
         }
         node.key = null;
         node.value = null;
-        --size;
         removeAfter(nextNode);
         return value;
     }

@@ -1,9 +1,9 @@
 package com.lzb.map;
 
 import com.lzb.map.itf.Map;
-import com.lzb.tree.BinarySearchTree;
+import com.lzb.tree.printer.BinaryTreeInfo;
+import com.lzb.tree.printer.BinaryTrees;
 
-import javax.swing.tree.TreeNode;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -45,22 +45,40 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        return false;
+        int index = index(key);
+        return node(table[index], key) != null;
     }
 
     @Override
     public boolean containsValue(V value) {
+        LinkedList<TreeNode<K, V>> queue = new LinkedList<>();
+        if (table != null) {
+            for (TreeNode<K, V> node : table) {
+                if (node == null) {
+                    continue;
+                }
+                queue.add(node);
+                while (!queue.isEmpty()) {
+                    node = queue.poll();
+                    if (Objects.equals(node.value, value)) {
+                        return true;
+                    }
+                    Optional.ofNullable(node.left).ifPresent(queue::add);
+                    Optional.ofNullable(node.right).ifPresent(queue::add);
+                }
+            }
+        }
         return false;
     }
 
     @Override
     public V put(K key, V value) {
-        int hash = hash(key);
-        int index = index(key, hash);
+        int hash = (key == null ? 0 : key.hashCode());
+        int index = index(key);
         TreeNode<K, V> node = table[index];
 
         if (Objects.isNull(node)) {
-            table[index] = new TreeNode<>(key, value, hash, null);
+            table[index] = new TreeNode<>(key, value, null);
             ++size;
             addAfter(table[index]);
             return null;
@@ -70,6 +88,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
         TreeNode<K, V> parent = node;
 
         int cmp = 0;
+        boolean isSearch = false;
         while (node != null) {
             if (node.hash < hash) {
                 cmp = 1;
@@ -79,16 +98,19 @@ public class MyHashMap<K, V> implements Map<K, V> {
                 exist = node;
             } else {
                 //hash 相等 and equals() --> false
-                if (key != null && node.key != null) {
-                    cmp = key.getClass().getName().compareTo(node.key.getClass().getName());
-                    if (cmp == 0 && key instanceof Comparable) {
-                        cmp = ((Comparable) key).compareTo(node.key);
-                    }
+                if (key != null && node.key != null && key.getClass() == node.key.getClass() && key instanceof Comparable) {
+                    cmp = ((Comparable<K>) key).compareTo(node.key);
                 }
-                //hash 相等 and equals() --> false and class 相同 and Comparable.compareTo() = 1，只能左右子树遍历，看看是否存在相同的key
+                //hash 相等 and equals() --> false and class 相同 and Comparable.compareTo() = 0，只能左右子树遍历，看看是否存在相同的key
                 if (cmp == 0) {
-                    exist = node(node, key, hash);
-                    cmp = System.identityHashCode(node.key) > System.identityHashCode(key) ? 1 : -1;
+                    //性能优化
+                    if (!isSearch) {
+                        exist = node(node, key);
+                        isSearch = true;
+                    }
+                    if (exist == null) {
+                        cmp = System.identityHashCode(node.key) > System.identityHashCode(key) ? 1 : -1;
+                    }
                 }
             }
 
@@ -105,7 +127,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
             node = cmp > 0 ? node.right : node.left;
         }
 
-        TreeNode<K, V> newNode = new TreeNode<>(key, value, hash, parent);
+        TreeNode<K, V> newNode = new TreeNode<>(key, value, parent);
         if (cmp > 0) {
             parent.right = newNode;
         } else {
@@ -117,41 +139,37 @@ public class MyHashMap<K, V> implements Map<K, V> {
         return null;
     }
 
-    private TreeNode<K, V> node(TreeNode<K, V> node, final K key, final int hash) {
+    private TreeNode<K, V> node(TreeNode<K, V> node, final K key) {
         if (Objects.isNull(node)) {
             return null;
         }
+        int hash = (key == null ? 0 : key.hashCode());
         if (node.hash < hash) {
-            return node(node.right, key, hash);
+            return node(node.right, key);
         } else if (node.hash > hash) {
-            return node(node.left, key, hash);
+            return node(node.left, key);
         } else if (Objects.equals(node.key, key)) {
             return node;
         } else {
             //hash 相等 and equals() --> false
             if (key != null && node.key != null) {
-                int cmp = key.getClass().getName().compareTo(node.key.getClass().getName());
-                if (cmp == 0 && key instanceof Comparable) {
-                    cmp = ((Comparable) key).compareTo(node.key);
+                int cmp = 0;
+                if (key != null && node.key != null && key.getClass() == node.key.getClass() && key instanceof Comparable) {
+                    cmp = ((Comparable<K>) key).compareTo(node.key);
                 }
-                if (cmp != 0) {
-                    if (cmp > 0) {
-                        return node(node.right, key, hash);
-                    }
-                    if (cmp < 0) {
-                        return node(node.left, key, hash);
-                    }
-                } else {
-                    //hash 相等 and equals() --> false and class 相同 and Comparable.compareTo() = 1，只能左右子树遍历，看看是否存在相同的key
-                    if (cmp == 0) {
-                        TreeNode<K, V> result = null;
-                        if (node.left != null && (result = node(node.left, key, hash)) != null) {
-                            return result;
-                        }
-                        if (node.right != null && (result = node(node.right, key, hash)) != null) {
-                            return result;
-                        }
-                    }
+                if (cmp > 0) {
+                    return node(node.right, key);
+                }
+                if (cmp < 0) {
+                    return node(node.left, key);
+                }
+                //hash 相等 and equals() --> false and class 相同 and Comparable.compareTo() = 0，只能左右子树遍历，看看是否存在相同的key
+                TreeNode<K, V> result = null;
+                if (node.left != null && (result = node(node.left, key)) != null) {
+                    return result;
+                }
+                if (node.right != null && (result = node(node.right, key)) != null) {
+                    return result;
                 }
             }
         }
@@ -160,12 +178,82 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public V remove(K key) {
-        return null;
+        int index = index(key);
+        TreeNode<K, V> root = table[index];
+        if (root == null) {
+            return null;
+        }
+        TreeNode<K, V> node = node(root, key);
+        if (node == null) {
+            return null;
+        }
+
+        V oldValue = node.value;
+        --size;
+
+        //度为2的节点
+        if (Objects.nonNull(node.left) && Objects.nonNull(node.right)) {
+            TreeNode<K, V> removeNode = predecessor(node);
+            removeNode = Objects.isNull(removeNode) ? successor(node) : removeNode;
+            //删除root
+            if (Objects.isNull(removeNode)) {
+                table[index] = null;
+                return oldValue;
+            }
+            node.value = removeNode.value;
+            node.hash = removeNode.hash;
+            node.key = removeNode.key;
+            node = removeNode;
+        }
+
+        //叶子（度为零）节点
+        if (node.left == null && node.right == null) {
+            TreeNode<K, V> parent = node.parent;
+            if (parent == null) {
+                table[index] = null;
+                return oldValue;
+            }
+            if (parent.left == node) {
+                parent.left = null;
+            } else {
+                parent.right = null;
+            }
+            node.value = null;
+            node.key = null;
+            removeAfter(node);
+            return oldValue;
+        }
+
+        //度为1的节点
+        TreeNode<K, V> parent = node.parent;
+        TreeNode<K, V> nextNode = Objects.nonNull(node.left) ? node.left : node.right;
+        if (parent == null) {
+            root = nextNode;
+            nextNode.parent = null;
+            removeAfter(node);
+            return oldValue;
+        }
+        nextNode.parent = parent;
+        if (parent.left == node) {
+            parent.left = nextNode;
+        } else {
+            parent.right = nextNode;
+        }
+        node.value = null;
+        node.key = null;
+        removeAfter(nextNode);
+        return oldValue;
     }
 
     @Override
     public void clear() {
-
+        if (size == 0) {
+            return;
+        }
+        size = 0;
+        for (int i = 0; i < table.length; i++) {
+            table[i] = null;
+        }
     }
 
     @Override
@@ -180,14 +268,17 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(K key) {
-        return null;
+        TreeNode<K, V> node = node(table[index(key)], key);
+        return node == null ? null : node.value;
     }
 
     @Override
     public void forEach(BiConsumer<? super K, ? super V> action) {
         LinkedList<TreeNode<K, V>> queue = new LinkedList<>();
         for (TreeNode<K, V> node : table) {
-            if (Objects.isNull(node)) continue;
+            if (Objects.isNull(node)) {
+                continue;
+            }
             queue.add(node);
             while (!queue.isEmpty()) {
                 node = queue.poll();
@@ -205,29 +296,15 @@ public class MyHashMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * 桶的位置
-     *
-     * @param key
-     * @param hash
-     * @return
+     * 根据key生成对应的索引（在桶数组中的位置）
      */
-    private int index(K key, int hash) {
-        if (Objects.isNull(key)) {
+    private int index(K key) {
+        if (key == null) {
             return 0;
         }
-        return hash & (table.length - 1);
-    }
-
-    private int index(TreeNode<K, V> node) {
-        return node.hash & (table.length - 1);
-    }
-
-    private int hash(K key) {
         int hash = key.hashCode();
-        //降低hash冲突，高低16位 异或运算
-        return hash ^ (hash >> 16);
+        return (hash ^ (hash >>> 16)) & (table.length - 1);
     }
-
 
     /*---------------------------------红黑树代码--------------------------------------*/
 
@@ -246,14 +323,11 @@ public class MyHashMap<K, V> implements Map<K, V> {
         public TreeNode<K, V> right;
         public TreeNode<K, V> parent;
 
-        public TreeNode(K key, V value, int hash, TreeNode<K, V> parent) {
-            if (Objects.isNull(key)) {
-                throw new IllegalArgumentException("key 不能为空");
-            }
+        public TreeNode(K key, V value, TreeNode<K, V> parent) {
             this.value = value;
             this.key = key;
             this.parent = parent;
-            this.hash = hash;
+            this.hash = (key == null ? 0 : key.hashCode());
         }
 
         public TreeNode() {
@@ -290,6 +364,11 @@ public class MyHashMap<K, V> implements Map<K, V> {
                 return parent.sibling();
             }
             return null;
+        }
+
+        @Override
+        public String toString() {
+            return "Node_" + key + "_" + value;
         }
     }
 
@@ -347,6 +426,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 染色
+     *
      * @param node
      * @param color
      * @return
@@ -360,6 +440,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 染黑
+     *
      * @param node
      * @return
      */
@@ -369,6 +450,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 染红
+     *
      * @param node
      * @return
      */
@@ -378,6 +460,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 节点颜色
+     *
      * @param node
      * @return
      */
@@ -418,7 +501,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
             } else if (node.isRight()) {
                 node.parent.right = newParent;
             } else {
-                //root = newParent;
+                table[index(node.key)] = newParent;
             }
         }
 
@@ -460,7 +543,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
             } else if (node.isRight()) {
                 node.parent.right = newParent;
             } else {
-                //root = newParent;
+                table[index(node.key)] = newParent;
             }
         }
 
@@ -477,6 +560,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 前驱节点
+     *
      * @return
      */
     private TreeNode<K, V> predecessor(TreeNode<K, V> node) {
@@ -511,6 +595,7 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     /**
      * 后继节点
+     *
      * @return
      */
     private TreeNode<K, V> successor(TreeNode<K, V> node) {
@@ -633,6 +718,37 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
         removeAfter(sibling.parent);
 
+    }
+
+    public void print() {
+        if (size == 0)
+            return;
+        for (int i = 0; i < table.length; i++) {
+            final TreeNode<K, V> root = table[i];
+            System.out.println("【index = " + i + "】");
+            BinaryTrees.println(new BinaryTreeInfo() {
+                @Override
+                public Object string(Object node) {
+                    return node;
+                }
+
+                @Override
+                public Object root() {
+                    return root;
+                }
+
+                @Override
+                public Object right(Object node) {
+                    return ((TreeNode<K, V>) node).right;
+                }
+
+                @Override
+                public Object left(Object node) {
+                    return ((TreeNode<K, V>) node).left;
+                }
+            });
+            System.out.println("---------------------------------------------------");
+        }
     }
 
 }
