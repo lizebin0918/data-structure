@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public interface Map<K extends Comparable<? super K>,V> {
+public interface Map<K, V> {
     
     int size();
 
