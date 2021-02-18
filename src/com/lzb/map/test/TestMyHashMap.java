@@ -1,7 +1,9 @@
 package com.lzb.map.test;
 
 import com.lzb.map.MyHashMap;
-import com.lzb.map.test.model.Key;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * 测试HashMap<br/>
@@ -11,21 +13,29 @@ import com.lzb.map.test.model.Key;
 public class TestMyHashMap {
 
     public static void main(String[] args) {
-        MyHashMap<Object, Integer> map = new MyHashMap<>();
+        MyHashMap<Integer, Integer> map = new MyHashMap<>();
 
-        for (int i = 1; i <= 10; i++) {
-            map.put(new Key(i), i);
-        }
-        for (int i = 5; i <= 7; i++) {
-            Asserts.test(map.remove(new Key(i)) == i);
+        for (int i=1; i<=30; i++) {
+            map.put(i, i);
         }
 
-        System.out.println(map.size());
-        Asserts.test(map.size() == 7);
-        for (int i = 1; i <= 3; i++) {
-            map.put(new Key(i), i + 5);
-        }
         map.print();
+
+        LinkedHashMap<String, String> linkedMap = new LinkedHashMap<>();
+        linkedMap.put("a", "a");
+        linkedMap.put("b", "b");
+        linkedMap.put("c", "c");
+        linkedMap.put("d", "d");
+        System.out.println(linkedMap);
+
+        LinkedList<Integer> l = new LinkedList<>();
+        for (int i=0;;++i) {
+            l.add(i);
+            if (i >= 8 - 1) {
+                System.out.println("转成红黑树:" + l.size());
+                break;
+            }
+        }
     }
 
 }
