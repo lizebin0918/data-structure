@@ -83,6 +83,11 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     @Override
     public E replace(E element) {
+        if (isEmpty()) {
+            elements[0] = element;
+            ++size;
+            return null;
+        }
         E oldElement = elements[0];
         elements[0] = element;
         heapifyDown(0);
