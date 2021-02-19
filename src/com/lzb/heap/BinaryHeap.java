@@ -8,7 +8,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
- * 二叉堆 <br/>
+ * 最小二叉堆 <br/>
  *
  * 符合完全二叉树性质
  * 父节点索引:(index + 1) >> 1 - 1
@@ -23,11 +23,13 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     private E[] elements;
     private int size;
+    private Class<E> type;
 
     private static final int CAPATITY = 16;
 
     public BinaryHeap(Class<E> type) {
-        elements = (E[]) Array.newInstance(type, CAPATITY);
+        this.type = type;
+        this.elements = (E[]) Array.newInstance(type, CAPATITY);
     }
 
     @Override
@@ -67,7 +69,16 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     @Override
     public E remove() {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        int index = 0;
+        E e = elements[index];
+        elements[index] = elements[size - 1];
+        elements[size - 1] = null;
+        --size;
+        heapifyDown(index);
+        return e;
     }
 
     @Override
@@ -81,7 +92,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
         // 新容量为旧容量的1.5倍
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        E[] newElements = (E[]) new Object[newCapacity];
+        E[] newElements = (E[]) Array.newInstance(type, newCapacity);
         for (int i = 0; i < size; i++) {
             newElements[i] = elements[i];
         }
@@ -118,8 +129,25 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     /**
      * 向下堆化
+     * @param index
      */
-    private void heapifyDown() {
+    private void heapifyDown(int index) {
+        int sci = smallerChild(index);
+        int current = index;
+        E e = elements[current];
+        while (sci > 0) {
+            E smaller = elements[sci];
+            if (smaller.compareTo(e) > 0) {
+                break;
+            }
+            elements[current] = smaller;
+            current = sci;
+            sci = smallerChild(current);
+        }
+
+        if (current != index) {
+            elements[current] = e;
+        }
 
     }
 
@@ -128,7 +156,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
      * @param i
      * @return -1 表示无根节点
      */
-    public static int parent(int i) {
+    private int parent(int i) {
         if (i == 0) {
             return -1;
         }
@@ -140,7 +168,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
      * @param i
      * @return
      */
-    public static int left(int i) {
+    private int left(int i) {
         return (i << 1) + 1;
     }
 
@@ -149,7 +177,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
      * @param i
      * @return
      */
-    public static int right(int i) {
+    private int right(int i) {
         return (i + 1) << 1;
     }
 
@@ -158,25 +186,44 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
      * @param size
      * @return
      */
-    public static int lastParent(int size) {
+    private int lastParent(int size) {
         return ((size + 1) >> 1) - 1;
+    }
+
+    /**
+     * 返回更大值的孩子
+     * @param i
+     * @return
+     */
+    public int smallerChild(int i) {
+        int li = left(i), ri = right(i);
+        if (li >= size) {
+            return -1;
+        }
+        if (ri >= size) {
+            return li;
+        }
+        E left = elements[li];
+        E right = elements[ri];
+        return left.compareTo(right) < 0 ? li : ri;
     }
 
     public static void main(String[] args) {
 
         BinaryHeap<Integer> heap = new BinaryHeap<>(Integer.class);
-        heap.add(1);
-        heap.add(3);
-        heap.add(5);
-        heap.add(2);
-        heap.add(4);
-        heap.add(6);
-        heap.add(0);
+        for (int i=20; i>=0; --i) {
+            heap.add(i);
+        }
         System.out.println(Arrays.toString(((BinaryHeap<Integer>) heap).elements));
         System.out.println(heap.size());
 
         BinaryTrees.print(heap);
         System.out.println("");
+
+        for (int i=0, size=heap.size(); i<size; i++) {
+            System.out.println(heap.remove());
+        }
+
     }
 
     @Override
@@ -200,6 +247,6 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     @Override
     public Object string(Object node) {
-        return node;
+        return elements[(int)node];
     }
 }
