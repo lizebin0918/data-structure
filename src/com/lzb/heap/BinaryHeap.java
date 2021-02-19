@@ -83,7 +83,10 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
     @Override
     public E replace(E element) {
-        return null;
+        E oldElement = elements[0];
+        elements[0] = element;
+        heapifyDown(0);
+        return oldElement;
     }
 
     private void ensureCapacity(int capacity) {
@@ -211,7 +214,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
     public static void main(String[] args) {
 
         BinaryHeap<Integer> heap = new BinaryHeap<>(Integer.class);
-        for (int i=20; i>=0; --i) {
+        for (int i=20; i>0; --i) {
             heap.add(i);
         }
         System.out.println(Arrays.toString(((BinaryHeap<Integer>) heap).elements));
@@ -220,9 +223,13 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
         BinaryTrees.print(heap);
         System.out.println("");
 
-        for (int i=0, size=heap.size(); i<size; i++) {
+        /*for (int i=0, size=heap.size(); i<size; i++) {
             System.out.println(heap.remove());
-        }
+        }*/
+
+        heap.replace(100);
+        BinaryTrees.print(heap);
+        System.out.println("");
 
     }
 
