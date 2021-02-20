@@ -26,6 +26,7 @@ public class MyHeapSort extends Sort {
         while (lastIndex >= 0) {
             heapifyDown(lastIndex--, array, length);
         }
+        //构建新数组，每次读取原数组的第一个元素，再向下堆化直到没有数据
         int[] newArray = new int[length];
         for (int i=0; length>0; i++) {
             newArray[i] = array[0];
