@@ -16,6 +16,10 @@ import java.util.Arrays;
  * 右孩子:(index + 1) << 1
  * 最后一个非叶子节点索引(n:数组长度):(n + 1)/2 - 1
  *
+ * 构建堆的方法：
+ * 1.自上而下的heapfyUp()，从 1....n 个元素遍历一直heapfyUp()
+ * 2.自下而上的heapfyDown()，从 最后一个非叶子-n, --n 个元素遍历一直heapfyDown()
+ *
  * Created on : 2021-02-18 23:14
  * @author lizebin
  */
@@ -156,7 +160,6 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
         if (current != index) {
             elements[current] = e;
         }
-
     }
 
     /**
@@ -261,4 +264,6 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
     public Object string(Object node) {
         return elements[(int)node];
     }
+
+
 }
