@@ -1,4 +1,7 @@
 package com.lzb.sort;
+
+import java.util.Arrays;
+
 /**
  * 希尔排序<br/>
  *
@@ -18,23 +21,26 @@ public class ShellSort extends Sort {
     public int[] sort(int[] array) {
         int gap = 4;
         //按gap分组
-        //i=0;next=3
-        //i=1;next=4
-        //i=2;next=5
-        //i=3;next=6
-        //i=4;next=7
-        //i=5;next=8
-        //i=6;next=9
+        //i=0;next=4
+        //i=1;next=5
+        //i=2;next=6
+        //i=3;next=7
+        //i=4;next=8
+        //i=5;next=9
+        //i=6;next=10
         //....
-        for (int i = 0, next = i + gap - 1; next < array.length; i++, next = i + gap - 1) {
-            //根据分组从后往前比较:(0,3);(3,6);(6,9).....next = next - gap + 1 直到等于i
-            while (next > i) {
-                if (array[next] >= array[i]) {
-                    break;
+        while (gap >= 1) {
+            for (int i = 0, next = i + gap; next < array.length; i++, next = i + gap) {
+                //根据分组从后往前比较:(0,3);(3,6);(6,9).....next = next - gap + 1 直到等于i
+                while (next >= gap) {
+                    if (array[next] >= array[next - gap]) {
+                        break;
+                    }
+                    swap(array, next, next - gap);
+                    next = next - gap;
                 }
-                swap(array, next, i);
-                next = next - gap + 1;
             }
+            gap = gap / 2;
         }
         return array;
     }
