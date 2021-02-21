@@ -1,20 +1,22 @@
 package com.lzb.heap;
 
 import com.lzb.heap.itf.Heap;
+import com.lzb.tree.BinaryTree;
 import com.lzb.tree.printer.BinaryTreeInfo;
 import com.lzb.tree.printer.BinaryTrees;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.*;
 
 /**
- * 最小二叉堆 <br/>
+ * 最小二叉堆实现（可通过compare()实现最大二叉堆）<br/>
  *
  * 符合完全二叉树性质
  * 父节点索引:(index + 1) >> 1 - 1
  * 左孩子:(index << 1) + 1
  * 右孩子:(index + 1) << 1
  * 最后一个非叶子节点索引(n:数组长度):(n + 1)/2 - 1
+ * 在当前的这个实现代码中，根据 compare() 的结果找出"更小"的元素放在树顶，怎么通过判断"更小"，就是 compare() 自己的判断逻辑。但是这个更小的元素实际的值更大，这样有可能会构建一个最大堆
  *
  * 构建堆的方法：
  * 1.自上而下的heapfyUp()，从 1....n 个元素遍历一直heapfyUp()
@@ -23,17 +25,33 @@ import java.util.Arrays;
  * Created on : 2021-02-18 23:14
  * @author lizebin
  */
-public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, BinaryTreeInfo {
+public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
 
     private E[] elements;
     private int size;
-    private Class<E> type;
+    private Comparator<E> comparator;
 
     private static final int CAPATITY = 16;
 
-    public BinaryHeap(Class<E> type) {
-        this.type = type;
-        this.elements = (E[]) Array.newInstance(type, CAPATITY);
+    public MinBinaryHeap() {
+        this(null, null);
+    }
+
+    public MinBinaryHeap(Comparator<E> comparator) {
+        this(null, comparator);
+    }
+
+    public MinBinaryHeap(E[] elements, Comparator<E> comparator) {
+        this.comparator = comparator;
+        if (elements == null) {
+            this.elements = (E[]) new Object[CAPATITY];
+        } else {
+            int capacity = Math.max(elements.length, CAPATITY);
+            size = elements.length;
+            this.elements = Arrays.copyOf(elements, elements.length);
+            heapfy();
+        }
+
     }
 
     @Override
@@ -104,7 +122,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
         // 新容量为旧容量的1.5倍
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        E[] newElements = (E[]) Array.newInstance(type, newCapacity);
+        E[] newElements = (E[]) new Object[newCapacity];
         for (int i = 0; i < size; i++) {
             newElements[i] = elements[i];
         }
@@ -125,7 +143,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
         int current = index;
         while (parent >= 0) {
             E pe = elements[parent];
-            if (pe.compareTo(e) <= 0) {
+            if (compareTo(pe, e) <= 0) {
                 break;
             }
             elements[current] = pe;
@@ -149,7 +167,7 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
         E e = elements[current];
         while (sci > 0) {
             E smaller = elements[sci];
-            if (smaller.compareTo(e) > 0) {
+            if (compareTo(smaller, e) > 0) {
                 break;
             }
             elements[current] = smaller;
@@ -216,16 +234,37 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
         }
         E left = elements[li];
         E right = elements[ri];
-        return left.compareTo(right) < 0 ? li : ri;
+        return compareTo(left, right) < 0 ? li : ri;
     }
+
+    public int compareTo(E e1, E e2) {
+        if (comparator == null) {
+            return ((Comparable<E>)e1).compareTo(e2);
+        } else {
+            return comparator.compare(e1, e2);
+        }
+    }
+
+    /**
+     * 构建最小(大)堆
+     */
+    public void heapfy() {
+        int lastIndex = ((size + 1) >> 1) - 1;
+        //构建最小堆
+        while (lastIndex >= 0) {
+            heapifyDown(lastIndex--);
+        }
+    }
+
+    /*------------------------------------*/
 
     public static void main(String[] args) {
 
-        BinaryHeap<Integer> heap = new BinaryHeap<>(Integer.class);
+        MinBinaryHeap<Integer> heap = new MinBinaryHeap<>();
         for (int i=20; i>0; --i) {
             heap.add(i);
         }
-        System.out.println(Arrays.toString(((BinaryHeap<Integer>) heap).elements));
+        System.out.println(Arrays.toString(((MinBinaryHeap<Integer>) heap).elements));
         System.out.println(heap.size());
 
         BinaryTrees.print(heap);
@@ -237,6 +276,11 @@ public class BinaryHeap<E extends Comparable<? super E>> implements Heap<E>, Bin
 
         heap.replace(100);
         BinaryTrees.print(heap);
+        System.out.println("");
+
+        Integer[] elements = new Integer[]{5, 3, 4, 2, 1, 0, 6};
+        MinBinaryHeap<Integer> h1 = new MinBinaryHeap<>(elements, Comparator.<Integer>naturalOrder().reversed());
+        BinaryTrees.print(h1);
         System.out.println("");
 
     }

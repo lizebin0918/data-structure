@@ -4,7 +4,7 @@ package com.lzb.heap.itf;
  * Created on : 2021-02-18 23:14
  * @author lizebin
  */
-public interface Heap<E extends Comparable<? super E>> {
+public interface Heap<E> {
 
     int size();
     boolean isEmpty();
