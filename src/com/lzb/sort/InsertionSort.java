@@ -21,12 +21,16 @@ public class InsertionSort extends Sort {
 
 		//基于上面版本，无需每次比较都swap()，swap()需要三行代码，而每次只要把较大值替换，一行代码即可
         for (int i = 1, length = array.length; i < length; i++) {
-            int loop = i;
-            while (--loop > 0) {
-                if (array[loop] <= array[loop + 1]) {
+            int lastIndex = i;
+            int value = array[i];
+            while (lastIndex-- > 0) {
+                if (array[lastIndex] <= value) {
                     break;
                 }
-                array[loop + 1] = array[loop];
+                array[lastIndex + 1] = array[lastIndex];
+            }
+            if (i != lastIndex) {
+                array[lastIndex + 1] = value;
             }
         }
         return array;
