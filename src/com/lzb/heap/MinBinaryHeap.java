@@ -18,6 +18,9 @@ import java.util.*;
  * 最后一个非叶子节点索引(n:数组长度):(n + 1)/2 - 1
  * 在当前的这个实现代码中，根据 compare() 的结果找出"更小"的元素放在树顶，怎么通过判断"更小"，就是 compare() 自己的判断逻辑。但是这个更小的元素实际的值更大，这样有可能会构建一个最大堆
  *
+ * 向上堆化-heapyUp(index):元素一直跟parent比较，直到找到对应的位置
+ * 向下堆化-heapyDown(index):元素跟更小的子节点比较，如果比它大则交互位置，一直到底
+ *
  * 构建堆的方法：
  * 1.自上而下的heapfyUp()，从 1....n 个元素遍历一直heapfyUp()
  * 2.自下而上的heapfyDown()，从 最后一个非叶子-n, --n 个元素遍历一直heapfyDown()
@@ -130,7 +133,7 @@ public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
     }
 
     /**
-     * 向上堆化
+     * 向上堆化:元素一直跟parent比较，直到找到对应的位置
      * @param index
      */
     private void heapifyUp(int index) {
@@ -158,7 +161,7 @@ public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
     }
 
     /**
-     * 向下堆化
+     * 向下堆化:元素跟更小的子节点比较，如果比它大则交互位置，一直到底
      * @param index
      */
     private void heapifyDown(int index) {
