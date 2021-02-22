@@ -1,4 +1,4 @@
-package com.lzb.utils.printer;
+package com.lzb.util.printer;
 
 public class Strings {
 	public static String repeat(String string, int count) {

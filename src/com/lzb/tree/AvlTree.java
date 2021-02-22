@@ -1,7 +1,7 @@
 package com.lzb.tree;
 
 
-import com.lzb.utils.printer.BinaryTrees;
+import com.lzb.util.printer.BinaryTrees;
 
 /**
  * AVL 树<br/>

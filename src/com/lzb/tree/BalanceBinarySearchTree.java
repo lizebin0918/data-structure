@@ -1,7 +1,7 @@
 package com.lzb.tree;
 
 
-import com.lzb.utils.printer.BinaryTreeInfo;
+import com.lzb.util.printer.BinaryTreeInfo;
 
 import java.util.Objects;
 

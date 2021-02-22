@@ -1,7 +1,7 @@
 package com.lzb.mixed;
 
 import com.lzb.heap.MinBinaryHeap;
-import com.lzb.utils.printer.BinaryTrees;
+import com.lzb.util.printer.BinaryTrees;
 
 import java.util.Arrays;
 import java.util.Random;
