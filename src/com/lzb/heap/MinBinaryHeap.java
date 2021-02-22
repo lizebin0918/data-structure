@@ -1,11 +1,8 @@
 package com.lzb.heap;
 
 import com.lzb.heap.itf.Heap;
-import com.lzb.tree.BinaryTree;
-import com.lzb.tree.printer.BinaryTreeInfo;
-import com.lzb.tree.printer.BinaryTrees;
+import com.lzb.utils.printer.BinaryTreeInfo;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -263,7 +260,7 @@ public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
 
     public static void main(String[] args) {
 
-        MinBinaryHeap<Integer> heap = new MinBinaryHeap<>();
+        /*MinBinaryHeap<Integer> heap = new MinBinaryHeap<>();
         for (int i=20; i>0; --i) {
             heap.add(i);
         }
@@ -273,9 +270,9 @@ public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
         BinaryTrees.print(heap);
         System.out.println("");
 
-        /*for (int i=0, size=heap.size(); i<size; i++) {
+        *//*for (int i=0, size=heap.size(); i<size; i++) {
             System.out.println(heap.remove());
-        }*/
+        }*//*
 
         heap.replace(100);
         BinaryTrees.print(heap);
@@ -284,7 +281,12 @@ public class MinBinaryHeap<E> implements Heap<E>, BinaryTreeInfo {
         Integer[] elements = new Integer[]{5, 3, 4, 2, 1, 0, 6};
         MinBinaryHeap<Integer> h1 = new MinBinaryHeap<>(elements, Comparator.<Integer>naturalOrder().reversed());
         BinaryTrees.print(h1);
-        System.out.println("");
+        System.out.println("");*/
+
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("a", "a");
+        map.put("b", "b");
+        System.out.println(map.entrySet().size());
 
     }
 

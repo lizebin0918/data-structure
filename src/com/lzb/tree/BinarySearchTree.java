@@ -1,8 +1,8 @@
 package com.lzb.tree;
 
 
-import com.lzb.tree.printer.BinaryTreeInfo;
-import com.lzb.tree.printer.BinaryTrees;
+import com.lzb.utils.printer.BinaryTreeInfo;
+import com.lzb.utils.printer.BinaryTrees;
 
 import java.util.LinkedList;
 import java.util.Objects;

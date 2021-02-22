@@ -1,8 +1,8 @@
 package com.lzb.map;
 
 import com.lzb.map.itf.Map;
-import com.lzb.tree.printer.BinaryTreeInfo;
-import com.lzb.tree.printer.BinaryTrees;
+import com.lzb.utils.printer.BinaryTreeInfo;
+import com.lzb.utils.printer.BinaryTrees;
 
 import java.util.*;
 import java.util.function.BiConsumer;

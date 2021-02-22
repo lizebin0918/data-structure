@@ -1,4 +1,4 @@
-package com.lzb.tree.printer;
+package com.lzb.utils.printer;
 
 public interface BinaryTreeInfo {
 	/**

@@ -1,8 +1,8 @@
 package com.lzb.tree;
 
 
-import com.lzb.tree.printer.BinaryTreeInfo;
-import com.lzb.tree.printer.BinaryTrees;
+import com.lzb.utils.printer.BinaryTreeInfo;
+import com.lzb.utils.printer.BinaryTrees;
 
 /**
  * 红黑树<br/>
