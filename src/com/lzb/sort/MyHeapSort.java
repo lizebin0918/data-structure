@@ -22,18 +22,21 @@ public class MyHeapSort extends Sort {
     public int[] sort(int[] array) {
         int length = array.length;
         int lastIndex = ((array.length + 1) >> 1) - 1;
-        //构建最小堆
+        //构建最大堆
         while (lastIndex >= 0) {
             heapifyDown(lastIndex--, array, length);
         }
+
+        System.out.println(Arrays.toString(array));
+
         //构建新数组，每次读取原数组的第一个元素，再向下堆化直到没有数据
-        int[] newArray = new int[length];
-        for (int i=0; length>0; i++) {
-            newArray[i] = array[0];
-            array[0] = array[--length];
+        while (length-- > 0) {
+            int last = array[length];
+            array[length] = array[0];
+            array[0] = last;
             heapifyDown(0, array, length);
         }
-        return newArray;
+        return array;
     }
 
     /**
@@ -47,7 +50,7 @@ public class MyHeapSort extends Sort {
         int e = array[current];
         while (sci > 0) {
             int smaller = array[sci];
-            if (smaller > e) {
+            if (compare(smaller, e) >= 0) {
                 break;
             }
             array[current] = smaller;
@@ -121,6 +124,16 @@ public class MyHeapSort extends Sort {
         }
         int left = array[li];
         int right = array[ri];
-        return left < right ? li : ri;
+        return compare(left, right) < 0 ? li : ri;
+    }
+
+    public int compare(int i1, int i2) {
+        if (i1 > i2) {
+            return -1;
+        } else if (i1 == i2) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
