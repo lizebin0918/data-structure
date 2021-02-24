@@ -113,6 +113,7 @@ public class Trie<V> {
             node = chidren.get(c);
             if (node == null) {
                 match = false;
+                break;
             }
         }
         return match;
