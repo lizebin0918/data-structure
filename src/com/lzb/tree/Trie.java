@@ -25,48 +25,97 @@ public class Trie<V> {
     }
 
     public V get(String key) {
-        return null;
+        if (key == null) {
+            throw new IllegalArgumentException("key is not null");
+        }
+        char[] array = key.toCharArray();
+        V value = null;
+        Node<V> node = root;
+        for (int i = 0, length = array.length; i < length; i++) {
+            HashMap<Character, Node<V>> children = node.getChidren();
+            if (children.isEmpty()) {
+                return value;
+            }
+            node = children.get(array[i]);
+            if (node == null) {
+                return null;
+            }
+        }
+        if (node.word) {
+            value = node.value;
+        }
+        return value;
     }
 
     public boolean contains(String key) {
-        return false;
+        return get(key) != null;
     }
 
     public V add(String key, V value) {
+        if (key == null) {
+            return null;
+        }
         char[] array = key.toCharArray();
         Node<V> node = root;
         V oldValue = null;
         for (int i = 0, length = array.length; i < length; i++) {
             Character c = array[i];
-            HashMap<Character, Node<V>> chidren = node.chidren;
-            //孩子节点不存在
-            if (chidren == null) {
-                System.out.println("c = " + c);
-                chidren = new HashMap<>();
-                Node<V> newChildNode = new Node<>();
-                chidren.put(c, newChildNode);
-                node.chidren = chidren;
-                if (i == length - 1) {
-                    newChildNode.word = true;
-                    newChildNode.value = value;
-                    break;
-                }
-            }
+            HashMap<Character, Node<V>> chidren = node.getChidren();
+            //节点不存在，需要新增
             node = chidren.get(c);
-            if (node != null && i == length - 1) {
-                oldValue = node.value;
-                node.value = value;
+            if (node == null) {
+                ++size;
+                Node<V> parent = node;
+                node = new Node<>();
+                node.parent = parent;
+                chidren.put(c, node);
             }
         }
+        oldValue = node.value;
+        node.value = value;
+        node.word = true;
         return oldValue;
     }
 
+    /**
+     * 删除
+     * @param key
+     * @return
+     */
     public V remove(String key) {
+        char[] array = key.toCharArray();
+        Node<V> node = root;
+        V oldValue = null;
+
+
         return null;
     }
 
+    /**
+     * 是否包含前缀
+     * @param prefix
+     * @return
+     */
     public boolean startsWith(String prefix) {
-        return false;
+        if (prefix == null) {
+            throw new IllegalArgumentException("prefix is not null");
+        }
+        char[] array = prefix.toCharArray();
+        Node<V> node = root;
+        boolean match = true;
+        for (int i=0, length=array.length; i<length; i++) {
+            char c = array[i];
+            HashMap<Character, Node<V>> chidren = node.getChidren();
+            if (chidren.isEmpty()) {
+                match = false;
+                break;
+            }
+            node = chidren.get(c);
+            if (node == null) {
+                match = false;
+            }
+        }
+        return match;
     }
 
     private static class Node<V> {
@@ -82,11 +131,31 @@ public class Trie<V> {
          * 是否为单词的结尾
          */
         boolean word = false;
+        /**
+         * 父节点
+         */
+        Node<V> parent;
+
+        public HashMap<Character, Node<V>> getChidren() {
+            return chidren == null ? chidren = new HashMap<>() : chidren;
+        }
     }
 
     public static void main(String[] args) {
         Trie<String> trie = new Trie<>();
-        System.out.println(trie.add("lizebin", "me"));
+        System.out.println(trie.add("ab", "me"));
+        System.out.println(trie.add("ab1", "me1"));
+        System.out.println(trie.add("ab2", "me2"));
+        System.out.println(trie.add("abcdef", "me2"));
+
+        System.out.println(trie.size);
+
+        System.out.println(trie.startsWith("abcdefg"));
+        System.out.println(trie.get("ab"));
+        System.out.println(trie.get("ab1"));
+        System.out.println(trie.get("ab2"));
+
+
     }
 
 }
