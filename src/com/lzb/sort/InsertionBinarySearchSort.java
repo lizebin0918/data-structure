@@ -54,16 +54,12 @@ public class InsertionBinarySearchSort extends Sort {
             return end;
         }
         //end>=start包括最右的一个数
-        for (int mid = (start + (end - start) / 2); end >= start; mid = (start + (end - start) / 2)) {
+        for (int mid = (start + (end - start) / 2); start < end; mid = (start + (end - start) / 2)) {
             if (array[mid] > array[index]) {
-                end = mid - 1;
+                end = mid;
             }
-            //array[index] >= array[mid]
+            //array[index] >= array[mid]，一直往右走
             else {
-                if (mid == index) {
-                    start = mid;
-                    break;
-                }
                 start = mid + 1;
             }
         }
