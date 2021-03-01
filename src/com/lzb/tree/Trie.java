@@ -78,14 +78,21 @@ public class Trie<V> {
         if (node == null) {
             return null;
         }
-        Node<V> parent = node.parent;
 
+        V oldValue = node.value;
         node.word = false;
 
-        //如果有子节点
-        //如果父节点有两个孩子
+        while (node != null) {
+            if (node.getChidren().size() > 0) {
+                break;
+            }
+            node.parent = null;
+            node.value = null;
+            node.chidren = null;
+            node = node.parent;
+        }
 
-        return null;
+        return oldValue;
     }
 
     /**
@@ -172,6 +179,13 @@ public class Trie<V> {
         System.out.println(trie.get("ab1"));
         System.out.println(trie.get("ab2"));
 
+        System.out.println(trie.remove("ab"));
+        System.out.println(trie.get("ab"));
+
+        System.out.println(trie.get("ab1"));
+        System.out.println(trie.get("ab2"));
+        System.out.println(trie.remove("abcdf"));
+        System.out.println(trie.get("abcdef"));
 
     }
 
