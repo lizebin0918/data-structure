@@ -83,7 +83,7 @@ public class Trie<V> {
         node.word = false;
 
         while (node != null) {
-            if (node.getChidren().size() > 0) {
+            if (node.getChidren().size() > 0 || node.word) {
                 break;
             }
             node.parent = null;
