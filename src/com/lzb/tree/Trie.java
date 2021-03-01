@@ -28,23 +28,11 @@ public class Trie<V> {
         if (key == null) {
             throw new IllegalArgumentException("key is not null");
         }
-        char[] array = key.toCharArray();
-        V value = null;
-        Node<V> node = root;
-        for (int i = 0, length = array.length; i < length; i++) {
-            HashMap<Character, Node<V>> children = node.getChidren();
-            if (children.isEmpty()) {
-                return value;
-            }
-            node = children.get(array[i]);
-            if (node == null) {
-                return null;
-            }
+        Node<V> node = node(key);
+        if (node != null && node.word) {
+            return node.value;
         }
-        if (node.word) {
-            value = node.value;
-        }
-        return value;
+        return null;
     }
 
     public boolean contains(String key) {
@@ -64,12 +52,14 @@ public class Trie<V> {
             //节点不存在，需要新增
             node = chidren.get(c);
             if (node == null) {
-                ++size;
                 Node<V> parent = node;
                 node = new Node<>();
                 node.parent = parent;
                 chidren.put(c, node);
             }
+        }
+        if (!node.word) {
+            ++size;
         }
         oldValue = node.value;
         node.value = value;
@@ -83,10 +73,17 @@ public class Trie<V> {
      * @return
      */
     public V remove(String key) {
-        char[] array = key.toCharArray();
-        Node<V> node = root;
-        V oldValue = null;
 
+        Node<V> node = node(key);
+        if (node == null) {
+            return null;
+        }
+        Node<V> parent = node.parent;
+
+        node.word = false;
+
+        //如果有子节点
+        //如果父节点有两个孩子
 
         return null;
     }
@@ -119,6 +116,23 @@ public class Trie<V> {
         return match;
     }
 
+    private Node<V> node(String key) {
+        char[] array = key.toCharArray();
+        V value = null;
+        Node<V> node = root;
+        for (int i = 0, length = array.length; i < length; i++) {
+            HashMap<Character, Node<V>> children = node.getChidren();
+            if (children.isEmpty()) {
+                return node;
+            }
+            node = children.get(array[i]);
+            if (node == null) {
+                return null;
+            }
+        }
+        return node;
+    }
+
     private static class Node<V> {
         /**
          * 存储对应字符，相当于树的连接线
@@ -149,9 +163,11 @@ public class Trie<V> {
         System.out.println(trie.add("ab2", "me2"));
         System.out.println(trie.add("abcdef", "me2"));
 
-        System.out.println(trie.size);
+        System.out.println("----------");
 
-        System.out.println(trie.startsWith("abcdefg"));
+        System.out.println(trie.size());
+
+        System.out.println(trie.startsWith("abcdf"));
         System.out.println(trie.get("ab"));
         System.out.println(trie.get("ab1"));
         System.out.println(trie.get("ab2"));
