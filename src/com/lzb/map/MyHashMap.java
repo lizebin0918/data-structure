@@ -73,13 +73,14 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
+        resize();
         int hash = (key == null ? 0 : key.hashCode());
         int index = index(key);
         TreeNode<K, V> node = table[index];
 
+        ++size;
         if (Objects.isNull(node)) {
             table[index] = new TreeNode<>(key, value, null);
-            ++size;
             addAfter(table[index]);
             return null;
         }
@@ -133,10 +134,90 @@ public class MyHashMap<K, V> implements Map<K, V> {
         } else {
             parent.left = newNode;
         }
-
-        ++size;
         addAfter(newNode);
         return null;
+    }
+
+    /**
+     * 扩容
+     */
+    private void resize() {
+        if ((float)(size + 1) / table.length <= FACTOR) {
+            return;
+        }
+        TreeNode<K, V>[] oldTable = table;
+        table = new TreeNode[table.length << 1];
+        //遍历所有节点，移动到新的table上
+        LinkedList<TreeNode<K, V>> queue = new LinkedList<>();
+        for (TreeNode<K, V> node : oldTable) {
+            if (Objects.isNull(node)) {
+                continue;
+            }
+            queue.add(node);
+            while (!queue.isEmpty()) {
+                TreeNode<K, V> subNode = queue.poll();
+                TreeNode<K, V> left = subNode.left, right = subNode.right;
+                if (Objects.nonNull(left)) {
+                    queue.add(left);
+                }
+                if (Objects.nonNull(right)) {
+                    queue.add(right);
+                }
+                move(subNode);
+            }
+        }
+    }
+
+    /**
+     * 扩容移动节点
+     * @param newNode
+     */
+    private void move(TreeNode<K, V> newNode) {
+        //重置"亲戚"关系
+        newNode.left = null;
+        newNode.right = null;
+        newNode.parent = null;
+        red(newNode);
+        //重新计算索引值
+        int index = index(newNode.key);
+        //复用put()放回对应位置
+        TreeNode<K, V> root = table[index];
+        if (Objects.isNull(root)) {
+            table[index] = newNode;
+            addAfter(table[index]);
+            return;
+        }
+
+        TreeNode<K, V> parent = root.parent, node = root;
+        K key = newNode.key;
+        int hash = (key == null ? 0 : key.hashCode());
+        int cmp = 0;
+        boolean isSearch = false;
+        while (node != null) {
+            if (node.hash < hash) {
+                cmp = 1;
+            } else if (node.hash > hash) {
+                cmp = -1;
+            }
+            //不会存在key.equals()相同的情况
+            /*else if (Objects.equals(node.key, key)) {
+                exist = node;
+            } */
+            else {
+                cmp = System.identityHashCode(node.key) > System.identityHashCode(key) ? 1 : -1;
+            }
+
+            parent = node;
+            node = cmp > 0 ? node.right : node.left;
+        }
+
+        newNode.parent = parent;
+        if (cmp > 0) {
+            parent.right = newNode;
+        } else {
+            parent.left = newNode;
+        }
+        addAfter(newNode);
     }
 
     private TreeNode<K, V> node(TreeNode<K, V> node, final K key) {
@@ -258,13 +339,52 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
     @Override
     public Set<K> keySet() {
-        return null;
+        Set<K> set = new HashSet<>();
+        LinkedList<TreeNode<K, V>> queue = new LinkedList<>();
+        for (TreeNode<K, V> node : table) {
+            if (Objects.isNull(node)) {
+                continue;
+            }
+            queue.add(node);
+            while (!queue.isEmpty()) {
+                node = queue.poll();
+                set.add(node.key);
+                TreeNode<K, V> left = node.left, right = node.right;
+                if (Objects.nonNull(left)) {
+                    queue.add(left);
+                }
+                if (Objects.nonNull(right)) {
+                    queue.add(right);
+                }
+            }
+        }
+        return set;
     }
 
     @Override
     public Collection<V> values() {
-        return null;
+        LinkedList<V> values = new LinkedList<>();
+        LinkedList<TreeNode<K, V>> queue = new LinkedList<>();
+        for (TreeNode<K, V> node : table) {
+            if (Objects.isNull(node)) {
+                continue;
+            }
+            queue.add(node);
+            while (!queue.isEmpty()) {
+                node = queue.poll();
+                values.add(node.value);
+                TreeNode<K, V> left = node.left, right = node.right;
+                if (Objects.nonNull(left)) {
+                    queue.add(left);
+                }
+                if (Objects.nonNull(right)) {
+                    queue.add(right);
+                }
+            }
+        }
+        return values;
     }
+
 
     @Override
     public V get(K key) {
