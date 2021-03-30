@@ -15,7 +15,7 @@ public class TestMyHashMap {
     public static void main(String[] args) {
         MyHashMap<Integer, Integer> map = new MyHashMap<>();
 
-        for (int i=1; i<=30; i++) {
+        for (int i=1; i<=100; i++) {
             map.put(i, i);
         }
 
@@ -28,14 +28,15 @@ public class TestMyHashMap {
         linkedMap.put("d", "d");
         System.out.println(linkedMap);
 
-        LinkedList<Integer> l = new LinkedList<>();
-        for (int i=0;;++i) {
-            l.add(i);
-            if (i >= 8 - 1) {
-                System.out.println("转成红黑树:" + l.size());
-                break;
-            }
-        }
+        System.out.println(map.size());
+        System.out.println(map.get(1));
+        System.out.println(map.get(11));
+        System.out.println(map.get(12));
+        System.out.println(map.get(79));
+        System.out.println(map.get(99));
+
+        System.out.println(map.keySet());
+        System.out.println(map.values());
     }
 
 }
