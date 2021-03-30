@@ -10,7 +10,7 @@ import java.util.*;
 public class RadixSortForString {
 
     public static void main(String[] args) {
-        List<String> sourceList = Arrays.asList("11", "22", "33", "55", "99", "66", "77");
+        List<String> sourceList = Arrays.asList("919a", "b820", "c731", "e551", "d99f", "k664", "l477", "zfsz", "aabb", "ccdd");
         List<String> list1 = new ArrayList<>(sourceList);
         List<String> list2 = new ArrayList<>(sourceList);
         list1.sort(Comparator.naturalOrder());
@@ -30,15 +30,13 @@ public class RadixSortForString {
         //低位优先
         for (int i=length-1; i>=0; i--) {
             //bucket 不包含中文
-            int[] buckets = new int[10];
+            int[] buckets = new int[126];
 
             for (String s : list) {
                 char[] chars = s.toCharArray();
-                int index = Integer.valueOf(String.valueOf(chars[i]));
-                System.out.println(index);
-                buckets[index]++;
+                int bucket = (int)chars[i];
+                buckets[bucket] = buckets[bucket] + 1;
             }
-            System.out.println("compare:" + Arrays.toString(buckets));
 
             //计算位置，对应位置的数字有几个
             int lastIndex = 0;
@@ -49,9 +47,20 @@ public class RadixSortForString {
                     buckets[j] = lastIndex - 1;
                 }
             }
-            System.out.println("cal index:" + Arrays.toString(buckets));
+
+            //遍历桶元素，从后往前遍历，保持上次排序的顺序
+            String[] array = new String[list.size()];
+            for (int j=list.size()-1; j>=0; j--) {
+                String s = list.get(j);
+                char[] chars = s.toCharArray();
+                int bucket = (int)chars[i];
+                int index = buckets[bucket];
+                array[index] = s;
+                buckets[bucket] = index - 1;
+            }
+            list = Arrays.asList(array);
         }
-        return null;
+        return list;
     }
 
 }
