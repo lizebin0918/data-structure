@@ -1,4 +1,4 @@
-package com.lzb.heap.itf;
+package com.lzb.tree.heap.itf;
 /**
  * 堆接口<br/>
  * Created on : 2021-02-18 23:14

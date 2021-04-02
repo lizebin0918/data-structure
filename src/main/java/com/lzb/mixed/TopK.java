@@ -1,6 +1,6 @@
 package com.lzb.mixed;
 
-import com.lzb.heap.MinBinaryHeap;
+import com.lzb.tree.heap.MinBinaryHeap;
 import com.lzb.util.printer.BinaryTrees;
 
 import java.util.Arrays;

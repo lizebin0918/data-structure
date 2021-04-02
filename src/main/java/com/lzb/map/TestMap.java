@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 public class TestMap {
 
 	public static void main(String[] args) {
-		DefinitionMap<String, String> map = new LizebinHashMap<String, String>();
+		DefinitionMap<String, String> map = new HashMapWithArray<String, String>();
 		//Map<String, String> map = new HashMap<String, String>();
 		map.put("lizebin", "linxiangjun");
 		map.put("lizebin1", "linxiangjun1");

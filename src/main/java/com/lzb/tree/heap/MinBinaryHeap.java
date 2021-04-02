@@ -1,6 +1,6 @@
-package com.lzb.heap;
+package com.lzb.tree.heap;
 
-import com.lzb.heap.itf.Heap;
+import com.lzb.tree.heap.itf.Heap;
 import com.lzb.util.printer.BinaryTreeInfo;
 
 import java.util.*;
