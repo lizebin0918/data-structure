@@ -1,23 +1,23 @@
 #数据结构学习
 
-###列表（`com.lzb.list`）
+##列表（`com.lzb.list`）
 * 动态列表
 * 链表
 * 循环链表
 * 双链表
     
-###映射（`com.lzb.map`）
+##映射（`com.lzb.map`）
 * `MyHashMap`(数组+红黑树)
 * `TreeMap`(红黑树)
     
-###队列（`com.lzb.queue`）
+##队列（`com.lzb.queue`）
 * 固定队列
 * 循环队列
 
-###栈（`com.lzb.stack`）
+##栈（`com.lzb.stack`）
 * 栈
 
-###排序（`com.lzb.sort`）
+##排序（`com.lzb.sort`）
 * 冒泡排序
 * 桶排序
 * 堆排序
@@ -30,13 +30,13 @@
 * 选择排序
 * 希尔排序
     
-###树（`com.lzb.tree`）
+##树（`com.lzb.tree`）
 * （平衡）二叉搜索树
 * Avl树
 * 红黑树
 * 字典树
     
-###杂项（`com.lzb.mixed`）
+##杂项（`com.lzb.mixed`）
 * 二分查找，返回索引位置
 * 栈实现计算器
 * 八皇后问题
