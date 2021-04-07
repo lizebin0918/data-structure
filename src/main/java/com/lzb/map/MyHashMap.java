@@ -102,7 +102,11 @@ public class MyHashMap<K, V> implements Map<K, V> {
                 if (key != null && node.key != null && key.getClass() == node.key.getClass() && key instanceof Comparable) {
                     cmp = ((Comparable<K>) key).compareTo(node.key);
                 }
-                //hash 相等 and equals() --> false and class 相同 and Comparable.compareTo() = 0，只能左右子树遍历，看看是否存在相同的key
+                //hash --> true and equals() --> false and class 相同 and Comparable.compareTo() = 0，
+                //比如一个类Key，hashCode() -> value < 20 ? 1 : 0; equals() -> value == value;
+                //当添加:map.put(new Key(2), "");map.put(new Key(1), "")，这时 System.identityHashCode(key1) > System.identityHashCode(node.key2)
+                //所以放到右子树，如果再添加:map.put(new Key(1), "")，还是通过 System.identityHashCode() 比较，无法保证向右边找
+                //只能左右子树遍历，看看是否存在相同的key
                 if (cmp == 0) {
                     //性能优化
                     if (!isSearch) {
