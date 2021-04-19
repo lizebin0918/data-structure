@@ -33,6 +33,21 @@ public class InsertionSort extends Sort {
                 array[lastIndex + 1] = value;
             }
         }
+
+        //插入排序(从小到大)
+       /* for (int i = 1; i < array.length; i++) {
+            int lastIndex = i;
+            while (lastIndex > 0) {
+                if (array[lastIndex] > array[lastIndex - 1]) {
+                    break;
+                }
+                int temp = array[lastIndex];
+                array[lastIndex] = array[lastIndex - 1];
+                array[lastIndex - 1] = temp;
+                --lastIndex;
+            }
+        }*/
+
         return array;
     }
 

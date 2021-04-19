@@ -11,11 +11,9 @@ public class MergeSort extends Sort {
 
     @Override
     public int[] sort(int[] array) {
-        int[] testArray = this.getTestArray();
-        System.out.println(Arrays.toString(testArray));
-        int[] newArray = new int[testArray.length];
+        int[] newArray = new int[array.length];
         //test
-        sort(testArray, 0, testArray.length - 1, newArray);
+        sort(array, 0, array.length - 1, newArray);
         return newArray;
     }
 
@@ -37,34 +35,40 @@ public class MergeSort extends Sort {
         int mid = (end + start) / 2;
         sort(array, start, mid, newArray);
         sort(array, mid + 1, end, newArray);
-        merge(array, start, mid, end, newArray);
+        merge(array, start, mid + 1, end, newArray);
     }
 
     /**
      * 合并
      * @param array 原数组
-     * @param leftPrt 左指针
-     * @param rightPrt 右指针
-     * @param rightBound 右指针边界
+     * @param leftPt 左指针
+     * @param rightPt 右指针
+     * @param bound 右指针边界
      * @param newArray 新数组
      */
-    private void merge(int[] array, int leftPrt, int rightPrt, int rightBound, int[] newArray) {
-        for (int i=leftPrt, j=rightPrt; i<j; i++) {
-            if (array[i] < array[rightPrt]) {
-                newArray[i] = array[i];
-                leftPrt++;
+    public void merge(int[] array, int leftPt, int rightPt, int bound, int[] newArray) {
+        int _leftPt = leftPt, _rightPt = rightPt;
+        int leftEnd = _rightPt;
+        int index = _leftPt;
+        while (_leftPt < rightPt && _rightPt <= bound) {
+            if (array[_leftPt] < array[_rightPt]) {
+                newArray[index++] = array[_leftPt++];
             } else {
-                newArray[rightPrt] = array[rightPrt];
-                rightPrt++;
+                newArray[index++] = array[_rightPt++];
             }
         }
-        while (leftPrt <= rightPrt) {
-            newArray[leftPrt] = array[leftPrt];
-            leftPrt++;
+        while (_leftPt < leftEnd) {
+            newArray[index++] = array[_leftPt];
+            _leftPt++;
         }
-        while (rightPrt <= rightBound) {
-            newArray[rightPrt] = array[rightPrt];
-            rightPrt++;
+        while (_rightPt <= bound) {
+            newArray[index++] = array[_rightPt];
+            _rightPt++;
+        }
+        //复制元素
+        while(leftPt <= bound){
+            array[leftPt] = newArray[leftPt];
+            leftPt++;
         }
     }
 }
