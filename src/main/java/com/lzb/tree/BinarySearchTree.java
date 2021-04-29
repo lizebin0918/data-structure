@@ -176,7 +176,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> implements Binary
     public void remove(E data) {
         Node<E> node = node(data);
 
-        //度为2的节点
+        //度为2的节点：找到前驱或者后继节点，替换该节点为被删除的节点（度肯定为0或者1），再走后续逻辑
         if (Objects.nonNull(node.left) && Objects.nonNull(node.right)) {
             Node<E> removeNode = predecessor(data);
             removeNode = Objects.isNull(removeNode) ? successor(data) : removeNode;
