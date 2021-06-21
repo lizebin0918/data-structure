@@ -114,7 +114,9 @@ public class ReverseLinkedList<E> extends LinkedList<E> {
         if (head == null || head.next == null) {
             return head;
         }
+        //最后一个节点
         Node<E> newHead = reverse3(head.next);
+        //head为倒数第n-1个节点...n-2...n-1
         head.next.next = head;
         head.next = null;
         return newHead;
