@@ -10,31 +10,33 @@ import java.util.*;
 public class RadixSortForString {
 
     public static void main(String[] args) {
-        List<String> sourceList = Arrays.asList("919a", "b820", "c731", "e551", "d99f", "k664", "l477", "zfsz", "aabb", "ccdd");
+        List<String> sourceList = Arrays.asList("a", "bc", "ac", "919a", "B820", "C731", "e551", "d99f", "k664", "l477", "zfsz", "aabb", "ccdd");
         List<String> list1 = new ArrayList<>(sourceList);
         List<String> list2 = new ArrayList<>(sourceList);
         list1.sort(Comparator.naturalOrder());
         System.out.println(list1);
-        list2 = sort(list2, list2.get(0).length());
+        list2 = sort(list2, list2.stream().mapToInt(String::length).max().getAsInt());
         System.out.println(list2);
     }
 
-    public static List<String> sort(List<String> list, int length) {
-        //check
-        for (String s : list) {
-            if (s == null || s.equals("") || s.length() != length) {
-                throw new IllegalArgumentException("参数不合法");
-            }
-        }
+    /**
+     * @param list
+     * @param maxLength 最大长度
+     * @return
+     */
+    public static List<String> sort(List<String> list, int maxLength) {
 
         //低位优先
-        for (int i=length-1; i>=0; i--) {
+        for (int i=maxLength-1; i>=0; i--) {
             //bucket 不包含中文
             int[] buckets = new int[126];
 
             for (String s : list) {
                 char[] chars = s.toCharArray();
-                int bucket = (int)chars[i];
+                int bucket = (char)0;
+                if (i < chars.length) {
+                    bucket = (int)chars[i];
+                }
                 buckets[bucket] = buckets[bucket] + 1;
             }
 
@@ -53,7 +55,10 @@ public class RadixSortForString {
             for (int j=list.size()-1; j>=0; j--) {
                 String s = list.get(j);
                 char[] chars = s.toCharArray();
-                int bucket = (int)chars[i];
+                int bucket = (char)0;
+                if (i < chars.length) {
+                    bucket = (int)chars[i];
+                }
                 int index = buckets[bucket];
                 array[index] = s;
                 buckets[bucket] = index - 1;
