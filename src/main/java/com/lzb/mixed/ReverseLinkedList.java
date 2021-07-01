@@ -32,7 +32,8 @@ public class ReverseLinkedList<E> extends LinkedList<E> {
         //基于新的逆序节点头插
         //list.reverse2();
         //基于递归逆序
-        list.reverse3();
+        //list.reverse3();
+        list.reverse(1, 3);
 
         list.show();
 
@@ -172,6 +173,41 @@ public class ReverseLinkedList<E> extends LinkedList<E> {
                 next1 = next1.next;
             }
         }
+    }
+
+    /**
+     * 翻转逻辑
+     * @param start
+     * @param end
+     */
+    public void reverse(int start, int end) {
+        Node<E> startNode = get(start), endNode = get(end),
+                startPre = get(start - 1), endNext = get(end + 1);
+        Node<E> current = startNode, pre = startPre;
+        while (current != endNext) {
+            Node<E> next = current.next;
+            current.next = pre;
+            pre = current;
+            current = next;
+        }
+        startPre.next = pre;
+        startNode.next = endNext;
+    }
+
+    public Node<E> get(int i) {
+        Node<E> current = head.next;
+        int j = 0;
+        while (true) {
+            if (i == j) {
+                return current;
+            }
+            if (Objects.isNull(current)) {
+                break;
+            }
+            current = current.next;
+            j++;
+        }
+        return null;
     }
 
 }
