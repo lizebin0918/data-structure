@@ -33,7 +33,7 @@ public class ReverseLinkedList<E> extends LinkedList<E> {
         //list.reverse2();
         //基于递归逆序
         //list.reverse3();
-        list.reverse(1, 3);
+        list.reverse(0, 5);
 
         list.show();
 
@@ -182,7 +182,7 @@ public class ReverseLinkedList<E> extends LinkedList<E> {
      */
     public void reverse(int start, int end) {
         Node<E> startNode = get(start), endNode = get(end),
-                startPre = get(start - 1), endNext = get(end + 1);
+                startPre = start == 0 ? head : get(start - 1), endNext = get(end + 1);
         Node<E> current = startNode, pre = startPre;
         while (current != endNext) {
             Node<E> next = current.next;
