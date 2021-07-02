@@ -1,6 +1,7 @@
 package com.lzb.list;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 
 /**
@@ -99,7 +100,6 @@ public class MyLinkedList<E> implements MyList<E>, Iterable<E> {
 	public void clear() {
 		Node<E> next = header;
 		while(next.getNext() != null) {
-			//����ʱ��������Ҫɾ��ı���
 			Node<E> temp = next;
 			next = next.getNext();
 			temp.setNodeValue(null);
@@ -191,5 +191,34 @@ public class MyLinkedList<E> implements MyList<E>, Iterable<E> {
 		}
 		
 	}
+
+    public static void main(String[] args) {
+        MyLinkedList<String> list = new MyLinkedList<>();
+        list.add("0");
+        list.add("1");
+        list.add("2");
+        list.add("3");
+        list.add("4");
+        list.add("5");
+        list.add("6");
+
+        list.forEach(System.out::println);
+
+        System.out.println(list.header.nodeValue);
+    }
+
+    public void oddEvenPrint() {
+
+        Node<E> oddNode = header.next;
+        Node<E> evenNode = oddNode != null ? oddNode.next : null;
+        while (Objects.nonNull(oddNode) && Objects.nonNull(evenNode)) {
+            Node<E> eNext = evenNode.next;
+            oddNode.next = eNext;
+            oddNode = eNext;
+            evenNode = oddNode.next;
+        }
+
+
+    }
 
 }
