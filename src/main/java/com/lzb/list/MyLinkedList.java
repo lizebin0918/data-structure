@@ -203,22 +203,28 @@ public class MyLinkedList<E> implements MyList<E>, Iterable<E> {
         list.add("6");
 
         list.forEach(System.out::println);
+        list.oddEvenPrint();
+        System.out.println("---------------------");
+        list.forEach(System.out::println);
 
-        System.out.println(list.header.nodeValue);
     }
 
     public void oddEvenPrint() {
 
-        Node<E> oddNode = header.next;
+	    //进一步
+        Node<E> oddNode = header;
+        //进两步
         Node<E> evenNode = oddNode != null ? oddNode.next : null;
         while (Objects.nonNull(oddNode) && Objects.nonNull(evenNode)) {
+            //先换位置
             Node<E> eNext = evenNode.next;
             oddNode.next = eNext;
-            oddNode = eNext;
-            evenNode = oddNode.next;
+            evenNode.next = eNext.next;
+            eNext.next = evenNode;
+            //oddNode和evenNode进一步
+            oddNode = oddNode.next;
+            evenNode = evenNode.next;
         }
-
-
     }
 
 }
