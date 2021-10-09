@@ -106,7 +106,33 @@ public class MyHashMap<K, V> implements Map<K, V> {
                 //比如一个类Key，hashCode() -> value < 20 ? 1 : 0; equals() -> value == value;
                 //当添加:map.put(new Key(2), "");map.put(new Key(1), "")，这时 System.identityHashCode(key1) > System.identityHashCode(node.key2)
                 //所以放到右子树，如果再添加:map.put(new Key(1), "")，还是通过 System.identityHashCode() 比较，无法保证向右边找
-                //只能左右子树遍历，看看是否存在相同的key
+                //只能左右子树遍历，看看是否存在相同的key，最后通过System.identityHashCode()判断放左还是放右。HashMap做法一样：
+                /**
+                 * // 先找
+                 * if (!searched) {
+                 *     TreeNode<K,V> q, ch;
+                 *     searched = true;
+                 *     if (((ch = p.left) != null &&
+                 *          (q = ch.find(h, k, kc)) != null) ||
+                 *         ((ch = p.right) != null &&
+                 *          (q = ch.find(h, k, kc)) != null))
+                 *         return q;
+                 * }
+                 *
+                 * // 加时赛
+                 * dir = tieBreakOrder(k, pk);
+                 *
+                 * static int tieBreakOrder(Object a, Object b) {
+                 *   int d;
+                 *   if (a == null || b == null ||
+                 *       (d = a.getClass().getName().
+                 *        compareTo(b.getClass().getName())) == 0)
+                 *       d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
+                 *            -1 : 1);
+                 *   return d;
+                 * }
+                 *
+                 */
                 if (cmp == 0) {
                     //性能优化
                     if (!isSearch) {
